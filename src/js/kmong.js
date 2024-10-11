@@ -1,4 +1,5 @@
 function calculateRevenue() {
+  console.log("calculateRevenue");
   var salesAmount = parseFloat(document.getElementById("salesAmount").value);
 
   // 서비스 이용료 계산
