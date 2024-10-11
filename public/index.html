@@ -5,35 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Simplex 테마 CSS 링크로 불러오기 -->
     <link rel="stylesheet" href="src/css/bootstrap.css" />
-
+    <!-- 페이지 SEO 메타 데이터 -->
+    <title>크몽 전문가 수수료 계산기 | 쉽고 빠른 수수료 계산</title>
+    <meta
+      name="description"
+      content="크몽 전문가 수수료 계산기를 사용하여 쉽게 판매 금액의 수수료와 최종 수익을 계산하세요."
+    />
+    <meta
+      name="keywords"
+      content="크몽, 전문가, 수수료 계산기, 수수료 계산, 판매 수수료, kmong, 크몽 수수료 계산기, 수수료, 계산기, 수수료닷컴"
+    />
+    <!-- Open Graph 메타 태그 -->
+    <meta property="og:title" content="크몽 전문가 수수료 계산기" />
+    <meta
+      property="og:description"
+      content="크몽 전문가 수수료 계산기를 사용하여 쉽게 수수료와 최종 수익을 계산하세요."
+    />
+    <meta property="og:image" content="URL_TO_YOUR_IMAGE" />
+    <meta property="og:url" content="YOUR_WEBSITE_URL" />
+    <!-- Schema.org 구조화 데이터 -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "크몽 전문가 수수료 계산기",
+        "description": "판매 금액의 수수료와 최종 수익을 쉽게 계산하는 수수료 계산기입니다.",
+        "url": "YOUR_WEBSITE_URL"
+      }
+    </script>
     <!-- JavaScript는 script 태그로 불러오기 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-    <title>크몽 수수료 계산기</title>
   </head>
   <body class="bg-light">
-    <div class="container mt-5">
-      <h1 class="text-center mb-4">수수료 계산기</h1>
-      <div class="form-group">
-        <label for="salesAmount">판매 금액 (₩):</label>
-        <input
-          type="number"
-          class="form-control"
-          id="salesAmount"
-          placeholder="판매 금액을 입력하세요"
-        />
+    <header>
+      <h1 class="text-center mb-4">크몽 전문가 수수료 계산기</h1>
+    </header>
+    <main>
+      <div class="container mt-5">
+        <section class="form-group">
+          <label for="salesAmount">판매 금액 (₩):</label>
+          <input
+            type="number"
+            class="form-control"
+            id="salesAmount"
+            placeholder="판매 금액을 입력하세요"
+          />
+        </section>
+        <button class="btn btn-primary w-100 mt-3" onclick="calculateRevenue()">
+          계산하기
+        </button>
+        <section id="results" class="mt-4 p-3 bg-white border rounded">
+          <p id="serviceFeeResult" class="text-info"></p>
+          <p id="paymentFeeResult" class="text-info"></p>
+          <p id="taxResult" class="text-info"></p>
+          <p id="totalCostResult" class="text-info"></p>
+          <p id="result" class="text-info"></p>
+        </section>
       </div>
-      <button class="btn btn-primary w-100" onclick="calculateRevenue()">
-        계산하기
-      </button>
-
-      <div id="results" class="mt-4 p-3 bg-white border rounded">
-        <p id="serviceFeeResult" class="text-info"></p>
-        <p id="paymentFeeResult" class="text-info"></p>
-        <p id="taxResult" class="text-info"></p>
-        <p id="totalCostResult" class="text-info"></p>
-        <p id="result" class="text-info"></p>
-      </div>
-    </div>
+    </main>
     <script src="/src/js/kmong.js"></script>
   </body>
 </html>

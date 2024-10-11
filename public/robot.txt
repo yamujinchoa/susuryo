@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /private/
+Disallow: /src/
+
+Allow: /public/
+Sitemap: https://www.susuryo.com/sitemap.xml
