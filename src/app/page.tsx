@@ -4,12 +4,12 @@
 import { useState } from "react";
 
 export default function HomePage() {
-  const [salesAmount, setSalesAmount] = useState("");
-  const [serviceFeeResult, setServiceFeeResult] = useState("");
-  const [paymentFeeResult, setPaymentFeeResult] = useState("");
-  const [taxResult, setTaxResult] = useState("");
-  const [totalCostResult, setTotalCostResult] = useState("");
-  const [totalRevenueResult, setTotalRevenueResult] = useState("");
+  const [salesAmount, setSalesAmount] = useState<string>("");
+  const [serviceFeeResult, setServiceFeeResult] = useState<string>("");
+  const [paymentFeeResult, setPaymentFeeResult] = useState<string>("");
+  const [taxResult, setTaxResult] = useState<string>("");
+  const [totalCostResult, setTotalCostResult] = useState<string>("");
+  const [totalRevenueResult, setTotalRevenueResult] = useState<string>("");
 
   const calculateRevenue = () => {
     const amount = parseFloat(salesAmount);
@@ -26,7 +26,8 @@ export default function HomePage() {
     setTotalRevenueResult(`최종 수익금: ${numberWithCommas(totalRevenue)}원`);
   };
 
-  const calculateServiceFee = (amount) => {
+  // amount 타입을 명시적으로 number로 지정
+  const calculateServiceFee = (amount: number): number => {
     if (amount <= 700000) {
       return Math.round(amount * 0.164);
     } else if (amount <= 2000000) {
@@ -36,7 +37,7 @@ export default function HomePage() {
     }
   };
 
-  const numberWithCommas = (x) => {
+  const numberWithCommas = (x: number): string => {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
