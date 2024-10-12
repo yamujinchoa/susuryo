@@ -1,8 +1,13 @@
 // src/app/layout.tsx
 import "./globals.css";
 import Script from "next/script";
+import { ReactNode } from "react";
 
-export default function RootLayout({ children }) {
+interface RootLayoutProps {
+  children: ReactNode;
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="ko">
       <head>
