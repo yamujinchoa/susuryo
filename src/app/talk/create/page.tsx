@@ -27,53 +27,64 @@ export default function CreatePage() {
   };
 
   return (
-    <div className="container mt-5">
-      <h2>글 작성</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label className="form-label">작성자</label>
-          <input
-            type="text"
-            className="form-control"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">제목</label>
-          <input
-            type="text"
-            className="form-control"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">내용</label>
-          <textarea
-            className="form-control"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            rows={4}
-            required
-          ></textarea>
-        </div>
-        <div className="mb-3">
-          <label className="form-label">비밀번호 (수정/삭제 시 필요)</label>
-          <input
-            type="password"
-            className="form-control"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" className="btn btn-primary">
-          글 작성
-        </button>
-      </form>
+    <div className="container mt-5 d-flex justify-content-center">
+      <div
+        className="shadow-lg p-4 rounded"
+        style={{ maxWidth: "700px", width: "100%" }}
+      >
+        <h2 className="mb-4 text-center">글 작성</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label className="form-label">작성자</label>
+            <input
+              type="text"
+              className="form-control rounded-pill"
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">제목</label>
+            <input
+              type="text"
+              className="form-control rounded-pill"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">내용</label>
+            <textarea
+              className="form-control rounded"
+              style={{ height: "200px", resize: "vertical" }}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              rows={4}
+              required
+            ></textarea>
+          </div>
+          <div className="mb-3">
+            <label className="form-label">비밀번호 (수정/삭제 시 필요)</label>
+            <input
+              type="password"
+              className="form-control rounded-pill"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <div className="text-center">
+            <button
+              type="submit"
+              className="btn btn-primary rounded-pill px-5 py-2"
+            >
+              글 작성
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

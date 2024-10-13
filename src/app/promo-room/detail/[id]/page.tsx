@@ -62,26 +62,35 @@ export default function DetailPage() {
   };
 
   return (
-    <div className="container mt-5">
+    <div className="container mt-5 d-flex justify-content-center">
       {post ? (
-        <div className="card">
+        <div
+          className="card shadow-lg"
+          style={{ maxWidth: "1320px", width: "100%" }}
+        >
           <div className="card-body">
-            <h5 className="card-title">{post.title}</h5>
+            <h2 className="card-title mb-3">{post.title}</h2>
             <h6 className="card-subtitle mb-2 text-muted">
               작성자: {post.author}
             </h6>
-            <p className="card-text">{post.content}</p>
-            <p className="text-muted">
+            <hr />
+            <p className="card-text" style={{ whiteSpace: "pre-wrap" }}>
+              {post.content}
+            </p>
+            <p className="text-muted small mt-3">
               작성 날짜: {new Date(post.created_at).toLocaleDateString()}
             </p>
-            <div className="text-end">
+            <div className="d-flex justify-content-end mt-4">
               <button
                 onClick={() => router.push(`/promo-room/edit/${post.id}`)}
-                className="btn btn-warning me-2"
+                className="btn btn-warning me-2 rounded-pill px-4"
               >
                 수정
               </button>
-              <button onClick={handleDelete} className="btn btn-danger">
+              <button
+                onClick={handleDelete}
+                className="btn btn-danger rounded-pill px-4"
+              >
                 삭제
               </button>
             </div>

@@ -1,28 +1,59 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import React from "react";
 
-export default function CreatePage() {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [author, setAuthor] = useState("");
-  const [password, setPassword] = useState("");
+export default function EditPage() {
+  const [title, setTitle] = useState<string>("");
+  const [content, setContent] = useState<string>("");
+  const [author, setAuthor] = useState<string>("");
+  const [storedPassword, setStoredPassword] = useState<string>("");
   const router = useRouter();
+  const { id } = useParams() as { id: string };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  useEffect(() => {
+    if (id) fetchPostData(id);
+  }, [id]);
 
-    const { error } = await supabase
-      .from("promo_posts")
-      .insert([{ title, content, author, password }]);
+  const fetchPostData = async (postId: string) => {
+    const { data, error } = await supabase
+      .from("talk_posts")
+      .select("title, content, author, password")
+      .eq("id", postId)
+      .single();
 
     if (error) {
-      console.error("Error inserting post:", error.message);
+      console.error("Error fetching post data:", error.message);
+      return;
+    }
+
+    setTitle(data.title);
+    setContent(data.content);
+    setAuthor(data.author);
+    setStoredPassword(data.password);
+  };
+
+  const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const passwordInput = prompt("비밀번호를 입력하세요:");
+    if (passwordInput !== storedPassword) {
+      alert("비밀번호가 일치하지 않습니다.");
+      return;
+    }
+
+    const { error } = await supabase
+      .from("talk_posts")
+      .update({ title, content, author })
+      .eq("id", id);
+
+    if (error) {
+      console.error("Error updating post:", error.message);
     } else {
-      router.push("/promo-room");
+      alert("게시글이 성공적으로 수정되었습니다.");
+      router.push(`/talk/detail/${id}`);
     }
   };
 
@@ -32,8 +63,8 @@ export default function CreatePage() {
         className="shadow-lg p-4 rounded"
         style={{ maxWidth: "700px", width: "100%" }}
       >
-        <h2 className="mb-4 text-center">글 작성</h2>
-        <form onSubmit={handleSubmit}>
+        <h2 className="mb-4 text-center">글 수정</h2>
+        <form onSubmit={handleUpdate}>
           <div className="mb-3">
             <label className="form-label">작성자</label>
             <input
@@ -65,22 +96,12 @@ export default function CreatePage() {
               required
             ></textarea>
           </div>
-          <div className="mb-3">
-            <label className="form-label">비밀번호 (수정/삭제 시 필요)</label>
-            <input
-              type="password"
-              className="form-control rounded-pill"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
           <div className="text-center">
             <button
               type="submit"
               className="btn btn-primary rounded-pill px-5 py-2"
             >
-              글 작성
+              글 수정
             </button>
           </div>
         </form>

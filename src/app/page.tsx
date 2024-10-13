@@ -44,7 +44,7 @@ export default function HomePage() {
   return (
     <main>
       <div className="container mt-5">
-        <h2 className="text-center">크몽 수수료 계산기</h2>
+        <h2 className="text-center">크몽(kmong) 수수료 계산기</h2>
         <section className="form-group">
           <label htmlFor="salesAmount">판매 금액 (₩):</label>
           <input

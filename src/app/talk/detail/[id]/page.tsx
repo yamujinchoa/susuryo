@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { useRouter } from "next/navigation";
-import { useParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 
 export default function DetailPage() {
   const [post, setPost] = useState<{
@@ -35,7 +34,7 @@ export default function DetailPage() {
     }
   }, [id]);
 
-  // 게시글 데이터 불러오기
+  // Fetch post data
   const fetchPost = async (postId: string) => {
     const { data, error } = await supabase
       .from("talk_posts")
@@ -50,7 +49,7 @@ export default function DetailPage() {
     }
   };
 
-  // 댓글 데이터 불러오기
+  // Fetch comments data
   const fetchComments = async (postId: string) => {
     const { data, error } = await supabase
       .from("talk_comments")
@@ -65,7 +64,7 @@ export default function DetailPage() {
     }
   };
 
-  // 게시글 삭제 핸들러
+  // Handle post deletion
   const handleDelete = async () => {
     const passwordInput = prompt("비밀번호를 입력하세요:");
 
@@ -86,7 +85,7 @@ export default function DetailPage() {
     }
   };
 
-  // 댓글 작성 핸들러
+  // Handle comment submission
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -109,7 +108,7 @@ export default function DetailPage() {
     }
   };
 
-  // 댓글 수정 핸들러
+  // Handle comment edit
   const handleCommentEdit = async (commentId: string) => {
     const newContent = prompt("새로운 댓글 내용을 입력하세요:");
     const passwordInput = prompt("비밀번호를 입력하세요:");
@@ -146,7 +145,7 @@ export default function DetailPage() {
     }
   };
 
-  // 댓글 삭제 핸들러
+  // Handle comment deletion
   const handleCommentDelete = async (commentId: string) => {
     const passwordInput = prompt("비밀번호를 입력하세요:");
 
@@ -185,24 +184,30 @@ export default function DetailPage() {
   return (
     <div className="container mt-5">
       {post ? (
-        <div className="card">
+        <div className="card shadow-sm rounded">
           <div className="card-body">
-            <h5 className="card-title">{post.title}</h5>
+            <h3 className="card-title mb-3">{post.title}</h3>
             <h6 className="card-subtitle mb-2 text-muted">
               작성자: {post.author}
             </h6>
-            <p className="card-text">{post.content}</p>
-            <p className="text-muted">
+            <hr />
+            <p className="card-text" style={{ whiteSpace: "pre-wrap" }}>
+              {post.content}
+            </p>
+            <p className="text-muted small">
               작성 날짜: {new Date(post.created_at).toLocaleDateString()}
             </p>
-            <div className="text-end">
+            <div className="d-flex justify-content-end mt-3">
               <button
                 onClick={() => router.push(`/talk/edit/${id}`)}
-                className="btn btn-warning me-2"
+                className="btn btn-warning rounded-pill me-2"
               >
                 수정
               </button>
-              <button onClick={handleDelete} className="btn btn-danger">
+              <button
+                onClick={handleDelete}
+                className="btn btn-danger rounded-pill"
+              >
                 삭제
               </button>
             </div>
@@ -212,27 +217,31 @@ export default function DetailPage() {
         <p className="text-center text-muted">게시글을 불러오는 중...</p>
       )}
 
-      {/* 댓글 리스트 */}
-      <div className="mt-4">
-        <h5>댓글</h5>
+      {/* Comments Section */}
+      <div className="mt-5">
+        <h4>댓글</h4>
         {comments.length > 0 ? (
-          <ul className="list-group">
+          <ul className="list-group list-group-flush">
             {comments.map((comment) => (
-              <li key={comment.id} className="list-group-item">
-                <strong>{comment.author}</strong> (
-                {new Date(comment.created_at).toLocaleDateString()}):
-                <br />
-                {comment.content}
-                <div className="text-end mt-2">
+              <li
+                key={comment.id}
+                className="list-group-item border rounded mb-2 shadow-sm"
+              >
+                <strong>{comment.author}</strong>
+                <span className="text-muted small ms-2">
+                  ({new Date(comment.created_at).toLocaleDateString()})
+                </span>
+                <p className="mb-2">{comment.content}</p>
+                <div className="d-flex justify-content-end">
                   <button
                     onClick={() => handleCommentEdit(comment.id)}
-                    className="btn btn-sm btn-warning me-2"
+                    className="btn btn-sm btn-warning rounded-pill me-2"
                   >
                     수정
                   </button>
                   <button
                     onClick={() => handleCommentDelete(comment.id)}
-                    className="btn btn-sm btn-danger"
+                    className="btn btn-sm btn-danger rounded-pill"
                   >
                     삭제
                   </button>
@@ -245,15 +254,15 @@ export default function DetailPage() {
         )}
       </div>
 
-      {/* 댓글 작성 폼 */}
+      {/* Comment Form */}
       <div className="mt-4">
-        <h5>댓글 작성</h5>
+        <h4>댓글 작성</h4>
         <form onSubmit={handleCommentSubmit}>
           <div className="mb-3">
             <label className="form-label">작성자</label>
             <input
               type="text"
-              className="form-control"
+              className="form-control rounded-pill"
               value={commentAuthor}
               onChange={(e) => setCommentAuthor(e.target.value)}
               required
@@ -262,7 +271,7 @@ export default function DetailPage() {
           <div className="mb-3">
             <label className="form-label">댓글 내용</label>
             <textarea
-              className="form-control"
+              className="form-control rounded"
               value={commentContent}
               onChange={(e) => setCommentContent(e.target.value)}
               rows={2}
@@ -273,13 +282,13 @@ export default function DetailPage() {
             <label className="form-label">비밀번호 (수정/삭제 시 필요)</label>
             <input
               type="password"
-              className="form-control"
+              className="form-control rounded-pill"
               value={commentPassword}
               onChange={(e) => setCommentPassword(e.target.value)}
               required
             />
           </div>
-          <button type="submit" className="btn btn-primary">
+          <button type="submit" className="btn btn-primary rounded-pill">
             댓글 작성
           </button>
         </form>
