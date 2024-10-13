@@ -11,7 +11,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="ko">
       <head>
-        {/* Google Analytics 스크립트를 next/script 컴포넌트로 설정 */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-28D1ZXMCMR"
           strategy="afterInteractive"
@@ -46,10 +45,58 @@ export default function RootLayout({ children }: RootLayoutProps) {
           content="B6fMSQ2WrcWxmg2xkoaLV50upLj7JtaxpUd9Zo-c-40"
         />
         <meta name="google-adsense-account" content="ca-pub-1338653742640391" />
+
+        {/* Bootstrap JavaScript and Popper.js */}
+        <Script
+          src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"
+          strategy="afterInteractive"
+        />
+        <Script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"
+          strategy="afterInteractive"
+        />
       </head>
       <body className="bg-light">
         <header>
-          <h1 className="text-center mb-4">크몽 전문가 수수료 계산기</h1>
+          {/* Navigation Bar */}
+          <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div className="container">
+              <a className="navbar-brand" href="/">
+                수수료닷컴
+              </a>
+              <button
+                className="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav"
+                aria-controls="navbarNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+              >
+                <span className="navbar-toggler-icon"></span>
+              </button>
+              <div className="collapse navbar-collapse" id="navbarNav">
+                <ul className="navbar-nav ms-auto">
+                  <li className="nav-item">
+                    <a className="nav-link" href="/promo-room">
+                      크몽인 홍보방
+                    </a>
+                  </li>
+                  <li className="nav-item">
+                    <a className="nav-link" href="/members-room">
+                      크몽인들의 밤
+                    </a>
+                  </li>
+                  <li className="nav-item">
+                    <a className="nav-link" href="/talk">
+                      크몽인 TALK
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </nav>
+          {/* Page Title */}
         </header>
         <main>{children}</main>
         <footer className="bg-dark text-light text-center p-3 mt-5">
