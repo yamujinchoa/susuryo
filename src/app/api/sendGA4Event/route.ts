@@ -22,8 +22,13 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, data: response.data });
   } catch (error) {
+    let errorMessage = "알 수 없는 오류가 발생했습니다";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: errorMessage },
       { status: 500 }
     );
   }
