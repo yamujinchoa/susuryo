@@ -11,6 +11,27 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="ko">
       <head>
+        {/* 기본 favicon.ico 자동 인식 */}
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+
+        {/* 추가적인 아이콘 크기 지원 */}
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link rel="icon" sizes="192x192" href="/android-chrome-192x192.png">  
+        <link rel="icon" sizes="512x512" href="/android-chrome-512x512.png">
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+        <meta name="msapplication-TileImage" content="/favicon-32x32.png"></meta>
+        <link rel="manifest" href="/site.webmanifest"></link>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-28D1ZXMCMR"
           strategy="afterInteractive"
@@ -23,6 +44,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             gtag('config', 'G-28D1ZXMCMR');
           `}
         </Script>
+
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>크몽 전문가 수수료 계산기 | 쉽고 빠른 수수료 계산</title>
         <meta
@@ -38,7 +60,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           property="og:description"
           content="크몽 전문가 수수료 계산기를 사용하여 쉽게 수수료와 최종 수익을 계산하세요."
         />
-        <meta property="og:image" content="URL_TO_YOUR_IMAGE" />
+        <meta property="og:image" content="https://www.susuryo.com/og-image.png" />
         <meta property="og:url" content="https://www.susuryo.com" />
         <meta
           name="google-site-verification"
