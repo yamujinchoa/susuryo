@@ -47,10 +47,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           property="og:description"
           content="크몽 전문가 수수료 계산기를 사용하여 쉽게 수수료와 최종 수익을 계산하세요."
         />
-        <meta
-          property="og:image"
-          content="https://www.susuryo.com/og-image.png"
-        />
+        <meta property="og:image" content="/og-image.png" />
         <meta property="og:url" content="https://www.susuryo.com" />
         <meta
           name="google-site-verification"
