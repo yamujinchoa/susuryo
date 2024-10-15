@@ -40,7 +40,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         />
         <meta
           name="keywords"
-          content="크몽, 전문가, 수수료 계산기, 수수료 계산, 판매 수수료, kmong, 크몽 수수료 계산기, 수수료, 계산기, 수수료닷컴, 숨고, 탈잉, 프리랜서, 홍보, 위시켓, 프리모아"
+          content="크몽, 전문가, 수수료 계산기, 수수료 계산, 판매 수수료, kmong, 크몽 수수료, 수수료, 계산기, 수수료닷컴, 숨고, 탈잉, 프리랜서, 홍보, 위시켓, 프리모아, 인디해커"
         />
         <meta property="og:title" content="크몽 전문가 수수료 계산기" />
         <meta
