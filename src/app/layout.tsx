@@ -31,7 +31,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         />
         <meta
           name="keywords"
-          content="크몽, 전문가, 수수료 계산기, 수수료 계산, 판매 수수료, kmong, 크몽 수수료 계산기, 수수료, 계산기, 수수료닷컴"
+          content="크몽, 전문가, 수수료 계산기, 수수료 계산, 판매 수수료, kmong, 크몽 수수료 계산기, 수수료, 계산기, 수수료닷컴, 숨고, 탈잉, 프리랜서, 홍보, 위시켓, 프리모아"
         />
         <meta property="og:title" content="크몽 전문가 수수료 계산기" />
         <meta
@@ -45,6 +45,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
           content="B6fMSQ2WrcWxmg2xkoaLV50upLj7JtaxpUd9Zo-c-40"
         />
         <meta name="google-adsense-account" content="ca-pub-1338653742640391" />
+        <meta
+          name="naver-site-verification"
+          content="e570ba8990227cdc11cb8cd1130662fb4912855a"
+        />
 
         {/* Bootstrap JavaScript and Popper.js */}
         <Script
