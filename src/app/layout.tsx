@@ -1,13 +1,24 @@
 // src/app/layout.tsx
+"use client"; // 이 줄을 추가하여 컴포넌트를 클라이언트 컴포넌트로 선언
+
 import "./globals.css";
 import Script from "next/script";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
+import sendGA4Event from "../utils/sendGA4Event";
 
 interface RootLayoutProps {
   children: ReactNode;
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
+  useEffect(() => {
+    // 페이지 로드 시 GA4 이벤트 전송
+    sendGA4Event("mp_test", {
+      page_title: document.title,
+      page_location: window.location.href,
+    });
+  }, []);
+
   return (
     <html lang="ko">
       <head>
@@ -40,7 +51,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         />
         <meta
           name="keywords"
-          content="크몽, 전문가, 수수료 계산기, 수수료 계산, 판매 수수료, kmong, 크몽 수수료, 수수료, 계산기, 수수료닷컴, 숨고, 탈잉, 프리랜서, 홍보, 위시켓, 프리모아, 인디해커"
+          content="크몽, 전문가, 수익금, 수익금 계산기, 수수료 계산기, 수수료 계산, 판매 수수료, kmong, 크몽 수수료, 수수료, 계산기, 수수료닷컴, 숨고, 탈잉, 프리랜서, 홍보, 위시켓, 프리모아, 인디해커"
         />
         <meta property="og:title" content="크몽 전문가 수수료 계산기" />
         <meta
@@ -127,7 +138,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
             </div>
           </nav>
         </header>
-        <main>{children}</main>
+        <main>
+          <h1 className="text-center my-4">
+            수수료닷컴 - 크몽 수익금 계산기와 프리랜서, 인디해커 커뮤니티
+          </h1>
+          {children}
+        </main>
         <footer className="bg-dark text-light text-center p-3 mt-5">
           <div className="container">
             <p>&quot;세상의 모든 수수료를 계산해드립니다!&quot;</p>
