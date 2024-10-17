@@ -3,21 +3,21 @@
 
 import "./globals.css";
 import Script from "next/script";
-import { ReactNode, useEffect } from "react";
-import sendGA4Event from "../utils/sendGA4Event";
+import { ReactNode } from "react";
+// import sendGA4Event from "../utils/sendGA4Event";
 
 interface RootLayoutProps {
   children: ReactNode;
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
-  useEffect(() => {
-    // 페이지 로드 시 GA4 이벤트 전송
-    sendGA4Event("mp_test", {
-      page_title: document.title,
-      page_location: window.location.href,
-    });
-  }, []);
+  // useEffect(() => {
+  //   // 페이지 로드 시 GA4 이벤트 전송
+  //   sendGA4Event("mp_test", {
+  //     page_title: document.title,
+  //     page_location: window.location.href,
+  //   });
+  // }, []);
 
   return (
     <html lang="ko">
@@ -38,10 +38,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
         />
         <link rel="icon" sizes="192x192" href="/android-chrome-192x192.png" />
         <link rel="icon" sizes="512x512" href="/android-chrome-512x512.png" />
+        <link rel="shortcut icon" href="/android-chrome-192x192.png" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="msapplication-TileImage" content="/favicon-32x32.png" />
         <link rel="manifest" href="/site.webmanifest" />
-
         {/* SEO 및 Open Graph 설정 */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>크몽 전문가 수수료 계산기 | 쉽고 빠른 수수료 계산</title>
