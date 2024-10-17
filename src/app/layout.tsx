@@ -23,6 +23,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="ko">
       <head>
         {/* Favicon 설정 */}
+        <link rel="icon" href="/android-chrome-192x192.png" />
+        <link rel="shortcut icon" href="/android-chrome-192x192.png" />
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <link
           rel="icon"
@@ -38,7 +40,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
         />
         <link rel="icon" sizes="192x192" href="/android-chrome-192x192.png" />
         <link rel="icon" sizes="512x512" href="/android-chrome-512x512.png" />
-        <link rel="shortcut icon" href="/android-chrome-192x192.png" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="msapplication-TileImage" content="/favicon-32x32.png" />
         <link rel="manifest" href="/site.webmanifest" />
