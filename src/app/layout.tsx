@@ -106,6 +106,13 @@ export default function RootLayout({ children }: RootLayoutProps) {
           <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
             <div className="container">
               <a className="navbar-brand" href="/">
+                <img
+                  src="/favicon.ico" // favicon 경로를 지정합니다
+                  alt="수수료닷컴 로고" // 대체 텍스트
+                  width="30" // 원하는 너비로 설정
+                  height="30" // 원하는 높이로 설정
+                  className="d-inline-block align-top me-2" // 오른쪽 마진을 추가
+                />
                 수수료닷컴
               </a>
               <button
@@ -142,9 +149,16 @@ export default function RootLayout({ children }: RootLayoutProps) {
           </nav>
         </header>
         <main>
-          <h1 className="text-center my-4">
+          <h1 className="visually-hidden">
             수수료닷컴 - 크몽 수익금 계산기와 프리랜서, 인디해커 커뮤니티
           </h1>
+          <div className="text-center">
+            <img
+              src="/banner-image.png"
+              alt="수수료닷컴 - 크몽 수익금 계산기와 프리랜서, 인디해커 커뮤니티"
+              className="img-fluid" // 반응형 이미지
+            />
+          </div>
           {children}
         </main>
         <footer className="bg-dark text-light text-center p-3 mt-5">
