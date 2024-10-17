@@ -45,7 +45,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <link rel="manifest" href="/site.webmanifest" />
         {/* SEO 및 Open Graph 설정 */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>크몽 전문가 수수료 계산기 | 쉽고 빠른 수수료 계산</title>
+        <title>
+          크몽 전문가 수수료 계산기 | 수수료 닷컴 (프리랜서, 인디해커){" "}
+        </title>
         <meta
           name="description"
           content="크몽 전문가 수수료 계산기를 사용하여 쉽게 판매 금액의 수수료와 최종 수익을 계산하세요."
