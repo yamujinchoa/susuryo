@@ -74,8 +74,8 @@ export default function Signup() {
         <p className="text-success">{message}</p>
       ) : (
         // 폼을 숨기지 않음
-        <form onSubmit={handleSignup} className="w-50 mx-auto">
-          <div className="mb-3">
+        <form onSubmit={handleSignup} className="row justify-content-center">
+          <div className="col-12 col-md-6 mb-3">
             <label htmlFor="username" className="form-label">
               사용자 이름
             </label>
@@ -89,7 +89,7 @@ export default function Signup() {
               required
             />
           </div>
-          <div className="mb-3">
+          <div className="col-12 col-md-6 mb-3">
             <label htmlFor="avatarUrl" className="form-label">
               아바타 URL
             </label>
@@ -103,7 +103,7 @@ export default function Signup() {
               required
             />
           </div>
-          <div className="mb-3">
+          <div className="col-12 col-md-6 mb-3">
             <label htmlFor="email" className="form-label">
               이메일
             </label>
@@ -117,7 +117,7 @@ export default function Signup() {
               required
             />
           </div>
-          <div className="mb-3">
+          <div className="col-12 col-md-6 mb-3">
             <label htmlFor="password" className="form-label">
               비밀번호 (소문자, 대문자, 숫자, 기호)
             </label>
@@ -131,7 +131,7 @@ export default function Signup() {
               required
             />
           </div>
-          <div className="mb-3">
+          <div className="col-12 col-md-6 mb-3">
             <label htmlFor="confirmPassword" className="form-label">
               비밀번호 확인
             </label>
@@ -149,7 +149,7 @@ export default function Signup() {
             )}
           </div>
           {/* hCaptcha 컴포넌트 추가 */}
-          <div className="mb-3">
+          <div className="col-12 col-md-6 mb-3">
             <HCaptcha
               ref={captcha}
               sitekey="2104412e-4560-49ba-add4-f7226a444562"
@@ -158,10 +158,12 @@ export default function Signup() {
               }}
             />
           </div>
-          <button type="submit" className="btn btn-primary w-100">
-            가입하기
-          </button>
-          {error && <p className="text-danger mt-3">{error}</p>}
+          <div className="col-12 col-md-6">
+            <button type="submit" className="btn btn-primary w-100">
+              가입하기
+            </button>
+            {error && <p className="text-danger mt-3">{error}</p>}
+          </div>
         </form>
       )}
     </div>

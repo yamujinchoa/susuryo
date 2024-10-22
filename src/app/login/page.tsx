@@ -37,8 +37,8 @@ export default function Login() {
 
   return (
     <div className="container mt-5">
-      <form onSubmit={handleLogin} className="w-50 mx-auto">
-        <div className="mb-3">
+      <form onSubmit={handleLogin} className="row justify-content-center">
+        <div className="col-12 col-md-6 mb-3">
           <label htmlFor="email" className="form-label">
             이메일
           </label>
@@ -46,12 +46,12 @@ export default function Login() {
             type="email"
             className="form-control"
             id="email"
-            placeholder="Enter your email"
+            placeholder="가입한 이메일을 입력하세요"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
-        <div className="mb-3">
+        <div className="col-12 col-md-6 mb-3">
           <label htmlFor="password" className="form-label">
             비밀번호
           </label>
@@ -59,23 +59,26 @@ export default function Login() {
             type="password"
             className="form-control"
             id="password"
-            placeholder="Enter your password"
+            placeholder="비밀번호를 입력하세요"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        {/* hCaptcha 컴포넌트 추가 */}
-        <HCaptcha
-          ref={captcha}
-          sitekey="2104412e-4560-49ba-add4-f7226a444562"
-          onVerify={(token) => {
-            setCaptchaToken(token);
-          }}
-        />
-        <button type="submit" className="btn btn-primary">
-          로그인
-        </button>
-        {error && <p className="text-danger mt-3">{error}</p>}
+        <div className="col-12 col-md-6 mb-3">
+          {/* hCaptcha 컴포넌트 추가 */}
+          <HCaptcha
+            ref={captcha}
+            sitekey="2104412e-4560-49ba-add4-f7226a444562"
+            onVerify={(token) => setCaptchaToken(token)}
+            size="compact" // HCaptcha will be responsive and smaller on mobile
+          />
+        </div>
+        <div className="col-12 col-md-6">
+          <button type="submit" className="btn btn-primary w-100">
+            로그인
+          </button>
+          {error && <p className="text-danger mt-3">{error}</p>}
+        </div>
       </form>
     </div>
   );
