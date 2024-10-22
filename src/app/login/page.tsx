@@ -13,36 +13,20 @@ export default function Login() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
 
     if (!captchaToken) {
       setError("Please complete the CAPTCHA verification.");
       return;
     }
 
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        setError(error.message);
-        if (captcha.current) {
-          captcha.current.resetCaptcha(); // 실패 시 CAPTCHA 초기화
-          setCaptchaToken(null); // 토큰 초기화
-        }
-      } else {
-        console.log("Login successful");
-      }
-    } catch (err) {
-      console.error("Unexpected error:", err);
-      setError("An unexpected error occurred. Please try again.");
-      if (captcha.current) {
-        captcha.current.resetCaptcha(); // 예기치 않은 오류 발생 시 CAPTCHA 초기화
-        setCaptchaToken(null); // 토큰 초기화
-      }
-    }
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+      options: {
+        captchaToken,
+      },
+    });
+    if (error) setError(error.message);
   };
 
   return (
@@ -82,7 +66,7 @@ export default function Login() {
             setCaptchaToken(token);
           }}
         />
-        <button type="submit" className="btn btn-primary mt-3">
+        <button type="submit" className="btn btn-primary">
           로그인
         </button>
         {error && <p className="text-danger mt-3">{error}</p>}
