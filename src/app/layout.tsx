@@ -236,52 +236,54 @@ export default function RootLayout({ children }: RootLayoutProps) {
                       크몽인 TALK
                     </a>
                   </li>
-                  {user ? (
-                    // 로그인 상태일 때 마이페이지 버튼
-                    <li className="nav-item dropdown">
-                      <a
-                        className="nav-link dropdown-toggle"
-                        href="#"
-                        role="button"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                      >
-                        <i className="bi bi-person-circle"></i>
-                      </a>
-                      <ul className="dropdown-menu dropdown-menu-end">
-                        <li>
-                          <Link href="/mypage" className="dropdown-item">
-                            마이페이지
-                          </Link>
-                        </li>
-                        <li>
-                          <button
-                            className="dropdown-item"
-                            onClick={async () => {
-                              await supabase.auth.signOut();
-                              setUser(null);
-                            }}
-                          >
-                            로그아웃
-                          </button>
-                        </li>
-                      </ul>
-                    </li>
-                  ) : (
-                    // 로그아웃 상태일 때 로그인/회원가입 버튼
-                    <>
-                      <li className="nav-item">
-                        <Link href="/login" className="nav-link">
-                          로그인
-                        </Link>
-                      </li>
-                      <li className="nav-item">
-                        <Link href="/signup" className="nav-link">
-                          회원가입
-                        </Link>
-                      </li>
-                    </>
-                  )}
+                  <li className="nav-item dropdown">
+                    <a
+                      className="nav-link dropdown-toggle"
+                      href="#"
+                      role="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      <i className="bi bi-person-circle"></i>
+                    </a>
+                    <ul className="dropdown-menu dropdown-menu-end">
+                      {user ? (
+                        <>
+                          {/* 로그인 상태일 때 */}
+                          <li>
+                            <Link href="/mypage" className="dropdown-item">
+                              마이페이지
+                            </Link>
+                          </li>
+                          <li>
+                            <button
+                              className="dropdown-item"
+                              onClick={async () => {
+                                await supabase.auth.signOut();
+                                setUser(null);
+                              }}
+                            >
+                              로그아웃
+                            </button>
+                          </li>
+                        </>
+                      ) : (
+                        <>
+                          {/* 로그아웃 상태일 때 */}
+                          <li>
+                            <Link href="/login" className="dropdown-item">
+                              로그인
+                            </Link>
+                          </li>
+                          <li>
+                            <Link href="/signup" className="dropdown-item">
+                              회원가입
+                            </Link>
+                          </li>
+                        </>
+                      )}
+                    </ul>
+                  </li>
                 </ul>
               </div>
             </div>
