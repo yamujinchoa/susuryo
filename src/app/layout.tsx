@@ -3,21 +3,27 @@
 
 import "./globals.css";
 import Script from "next/script";
-import { ReactNode } from "react";
-// import sendGA4Event from "../utils/sendGA4Event";
+import { ReactNode, useEffect, useState } from "react";
+import { supabase } from "../lib/supabaseClient";
+import Link from "next/link";
+import { User } from "@supabase/supabase-js";
 
 interface RootLayoutProps {
   children: ReactNode;
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
-  // useEffect(() => {
-  //   // 페이지 로드 시 GA4 이벤트 전송
-  //   sendGA4Event("mp_test", {
-  //     page_title: document.title,
-  //     page_location: window.location.href,
-  //   });
-  // }, []);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
+    };
+    checkUser();
+  }, []);
 
   return (
     <html lang="ko">
@@ -114,6 +120,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
           name="keywords"
           content="크몽, 전문가, 수익금, 수익금 계산기, 수수료 계산기, 수수료 계산, 판매 수수료, kmong, 크몽 수수료, 수수료, 계산기, 수수료닷컴, 숨고, 탈잉, 프리랜서, 홍보, 위시켓, 프리모아, 인디해커"
         />
+
+        {/* Open Graph */}
         <meta property="og:title" content="크몽 전문가 수수료 계산기" />
         <meta
           property="og:description"
@@ -124,11 +132,30 @@ export default function RootLayout({ children }: RootLayoutProps) {
           content="https://www.susuryo.com/og-image.png"
         />
         <meta property="og:url" content="https://www.susuryo.com" />
+        <meta property="og:type" content="website" />
+
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="크몽 전문가 수수료 계산기" />
+        <meta
+          name="twitter:description"
+          content="크몽 전문가 수수료 계산기를 사용하여 쉽게 수수료와 최종 수익을 계산하세요."
+        />
+        <meta
+          name="twitter:image"
+          content="https://www.susuryo.com/og-image.png"
+        />
+        <meta name="twitter:site" content="@susuryo_com" />
+        <meta name="twitter:creator" content="@susuryo_com" />
+
+        {/* Google verification */}
         <meta
           name="google-site-verification"
           content="B6fMSQ2WrcWxmg2xkoaLV50upLj7JtaxpUd9Zo-c-40"
         />
         <meta name="google-adsense-account" content="ca-pub-1338653742640391" />
+
+        {/* Naver verification */}
         <meta
           name="naver-site-verification"
           content="e570ba8990227cdc11cb8cd1130662fb4912855a"
@@ -157,6 +184,14 @@ export default function RootLayout({ children }: RootLayoutProps) {
           src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"
           strategy="afterInteractive"
         />
+
+        {/* Hcaptcha.com */}
+        <Script
+          src="https://hcaptcha.com/1/api.js"
+          strategy="afterInteractive"
+          async
+          defer
+        ></Script>
       </head>
       <body className="bg-light">
         <header>
@@ -201,6 +236,52 @@ export default function RootLayout({ children }: RootLayoutProps) {
                       크몽인 TALK
                     </a>
                   </li>
+                  {user ? (
+                    // 로그인 상태일 때 마이페이지 버튼
+                    <li className="nav-item dropdown">
+                      <a
+                        className="nav-link dropdown-toggle"
+                        href="#"
+                        role="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        <i className="bi bi-person-circle"></i>
+                      </a>
+                      <ul className="dropdown-menu dropdown-menu-end">
+                        <li>
+                          <Link href="/mypage" className="dropdown-item">
+                            마이페이지
+                          </Link>
+                        </li>
+                        <li>
+                          <button
+                            className="dropdown-item"
+                            onClick={async () => {
+                              await supabase.auth.signOut();
+                              setUser(null);
+                            }}
+                          >
+                            로그아웃
+                          </button>
+                        </li>
+                      </ul>
+                    </li>
+                  ) : (
+                    // 로그아웃 상태일 때 로그인/회원가입 버튼
+                    <>
+                      <li className="nav-item">
+                        <Link href="/login" className="nav-link">
+                          로그인
+                        </Link>
+                      </li>
+                      <li className="nav-item">
+                        <Link href="/signup" className="nav-link">
+                          회원가입
+                        </Link>
+                      </li>
+                    </>
+                  )}
                 </ul>
               </div>
             </div>
