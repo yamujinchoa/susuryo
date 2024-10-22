@@ -26,7 +26,13 @@ export default function Login() {
         captchaToken,
       },
     });
-    if (error) setError(error.message);
+
+    if (error) {
+      setError(error.message);
+    } else {
+      // 로그인 성공 시 메인 페이지로 리다이렉션
+      window.location.href = "/"; // 메인 페이지 경로로 수정
+    }
   };
 
   return (
