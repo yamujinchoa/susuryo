@@ -184,6 +184,14 @@ export default function RootLayout({ children }: RootLayoutProps) {
           src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"
           strategy="afterInteractive"
         />
+
+        {/* Hcaptcha.com */}
+        <Script
+          src="https://hcaptcha.com/1/api.js"
+          strategy="afterInteractive"
+          async
+          defer
+        ></Script>
       </head>
       <body className="bg-light">
         <header>

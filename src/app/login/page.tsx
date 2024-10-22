@@ -1,15 +1,23 @@
 // src/app/login/page.tsx
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { supabase } from "../../lib/supabaseClient";
+import HCaptcha from "@hcaptcha/react-hcaptcha";
 
 export default function Login() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const captcha = useRef<HCaptcha | null>(null);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!captchaToken) {
+      setError("Please complete the CAPTCHA verification.");
+      return;
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -22,7 +30,7 @@ export default function Login() {
       <form onSubmit={handleLogin} className="w-50 mx-auto">
         <div className="mb-3">
           <label htmlFor="email" className="form-label">
-            Email
+            이메일
           </label>
           <input
             type="email"
@@ -35,7 +43,7 @@ export default function Login() {
         </div>
         <div className="mb-3">
           <label htmlFor="password" className="form-label">
-            Password
+            비밀번호
           </label>
           <input
             type="password"
@@ -46,8 +54,16 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
+        {/* hCaptcha 컴포넌트 추가 */}
+        <HCaptcha
+          ref={captcha}
+          sitekey="2104412e-4560-49ba-add4-f7226a444562"
+          onVerify={(token) => {
+            setCaptchaToken(token);
+          }}
+        />
         <button type="submit" className="btn btn-primary">
-          Log In
+          로그인
         </button>
         {error && <p className="text-danger mt-3">{error}</p>}
       </form>
