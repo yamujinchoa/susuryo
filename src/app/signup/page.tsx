@@ -5,7 +5,8 @@ import { supabase } from "../../lib/supabaseClient";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 
 export default function Signup() {
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -18,7 +19,7 @@ export default function Signup() {
   // 비밀번호와 비밀번호 확인 일치 여부 검증
   useEffect(() => {
     if (confirmPassword && password !== confirmPassword) {
-      setPasswordError("Passwords do not match.");
+      setPasswordError("비밀번호가 일치하지 않습니다.");
     } else {
       setPasswordError(null);
     }
@@ -42,8 +43,8 @@ export default function Signup() {
       password,
       options: {
         data: {
-          user_name: name,
-          avatar_url: null,
+          username,
+          avatar_url: avatarUrl,
         },
         captchaToken,
       },
@@ -63,16 +64,30 @@ export default function Signup() {
     <div className="container mt-5">
       <form onSubmit={handleSignup} className="w-50 mx-auto">
         <div className="mb-3">
-          <label htmlFor="name" className="form-label">
-            이름(닉네임)
+          <label htmlFor="username" className="form-label">
+            사용자 이름
           </label>
           <input
             type="text"
             className="form-control"
-            id="name"
-            placeholder="Enter your name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            id="username"
+            placeholder="사용자 이름을 입력하세요"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label htmlFor="avatarUrl" className="form-label">
+            아바타 URL
+          </label>
+          <input
+            type="text"
+            className="form-control"
+            id="avatarUrl"
+            placeholder="아바타 URL을 입력하세요"
+            value={avatarUrl}
+            onChange={(e) => setAvatarUrl(e.target.value)}
             required
           />
         </div>
@@ -84,7 +99,7 @@ export default function Signup() {
             type="email"
             className="form-control"
             id="email"
-            placeholder="Enter your email"
+            placeholder="이메일을 입력하세요"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -98,7 +113,7 @@ export default function Signup() {
             type="password"
             className="form-control"
             id="password"
-            placeholder="Enter your password"
+            placeholder="비밀번호를 입력하세요"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -112,7 +127,7 @@ export default function Signup() {
             type="password"
             className="form-control"
             id="confirmPassword"
-            placeholder="Re-enter your password"
+            placeholder="비밀번호를 다시 입력하세요"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
