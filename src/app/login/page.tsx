@@ -15,7 +15,6 @@ export default function Login() {
     e.preventDefault();
     setError(null);
 
-    // CAPTCHA가 완료되지 않은 경우 오류 메시지를 설정합니다.
     if (!captchaToken) {
       setError("Please complete the CAPTCHA verification.");
       return;
@@ -29,13 +28,20 @@ export default function Login() {
 
       if (error) {
         setError(error.message);
+        if (captcha.current) {
+          captcha.current.resetCaptcha(); // 실패 시 CAPTCHA 초기화
+          setCaptchaToken(null); // 토큰 초기화
+        }
       } else {
-        // 로그인 성공 시 동작 추가
         console.log("Login successful");
       }
     } catch (err) {
       console.error("Unexpected error:", err);
       setError("An unexpected error occurred. Please try again.");
+      if (captcha.current) {
+        captcha.current.resetCaptcha(); // 예기치 않은 오류 발생 시 CAPTCHA 초기화
+        setCaptchaToken(null); // 토큰 초기화
+      }
     }
   };
 
