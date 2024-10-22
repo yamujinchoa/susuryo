@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { supabase } from "../../lib/supabaseClient";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
+import Script from "next/script"; // Import Script component
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -23,7 +24,7 @@ export default function Signup() {
       email,
       password,
       options: {
-        captchaToken, // hCaptcha 토큰을 포함
+        captchaToken, // hCaptcha token included
       },
     });
 
@@ -33,29 +34,37 @@ export default function Signup() {
   };
 
   return (
-    <form onSubmit={handleSignup}>
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
+    <>
+      <Script
+        src="https://hcaptcha.com/1/api.js"
+        strategy="afterInteractive"
+        async
+        defer
       />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      {/* hCaptcha 컴포넌트 추가 */}
-      <HCaptcha
-        ref={captcha}
-        sitekey="2104412e-4560-49ba-add4-f7226a444562"
-        onVerify={(token) => {
-          setCaptchaToken(token);
-        }}
-      />
-      <button type="submit">Sign Up</button>
-      {error && <p>{error}</p>}
-    </form>
+      <form onSubmit={handleSignup}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        {/* hCaptcha component */}
+        <HCaptcha
+          ref={captcha}
+          sitekey="2104412e-4560-49ba-add4-f7226a444562"
+          onVerify={(token) => {
+            setCaptchaToken(token);
+          }}
+        />
+        <button type="submit">Sign Up</button>
+        {error && <p>{error}</p>}
+      </form>
+    </>
   );
 }
