@@ -42,9 +42,10 @@ export default function Signup() {
       password,
       options: {
         data: {
-          name, // 추가한 사용자 이름
+          user_name: name,
+          avatar_url: null,
         },
-        captchaToken, // hCaptcha 토큰 포함
+        captchaToken,
       },
     });
 
