@@ -1,3 +1,4 @@
+// src/app/talk/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -21,7 +22,7 @@ export default function ListPage() {
 
   const fetchPosts = async () => {
     const { data, error } = await supabase
-      .from("talk_posts") // 테이블 이름을 변경
+      .from("talk_posts")
       .select()
       .order("created_at", { ascending: false });
 
@@ -32,8 +33,26 @@ export default function ListPage() {
     }
   };
 
-  const handleCreate = () => {
-    router.push("/talk/create");
+  const checkUser = async () => {
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+    if (error) {
+      console.error("Error checking user:", error.message);
+      return false;
+    }
+    return user ? true : false;
+  };
+
+  const handleCreate = async () => {
+    const isLoggedIn = await checkUser();
+    if (isLoggedIn) {
+      router.push("/talk/create");
+    } else {
+      alert("글을 작성하려면 로그인이 필요합니다.");
+      router.push("/login"); // 로그인 페이지로 이동
+    }
   };
 
   const handleDetail = (postId: number) => {
@@ -59,29 +78,24 @@ export default function ListPage() {
               <thead className="table-light">
                 <tr>
                   <th scope="col">번호</th>
-                  <th scope="col">제목</th>
+                  <th scope="col" style={{ width: "60%" }}>
+                    제목
+                  </th>
                   <th scope="col">작성자</th>
                   <th scope="col">작성 날짜</th>
-                  <th scope="col" className="text-end">
-                    작업
-                  </th>
                 </tr>
               </thead>
               <tbody>
                 {posts.map((post, index) => (
-                  <tr key={post.id}>
+                  <tr
+                    key={post.id}
+                    onClick={() => handleDetail(post.id)}
+                    style={{ cursor: "pointer" }}
+                  >
                     <th scope="row">{index + 1}</th>
                     <td>{post.title}</td>
                     <td>{post.author}</td>
                     <td>{new Date(post.created_at).toLocaleDateString()}</td>
-                    <td className="text-end">
-                      <button
-                        onClick={() => handleDetail(post.id)}
-                        className="btn btn-info btn-sm me-2"
-                      >
-                        보기
-                      </button>
-                    </td>
                   </tr>
                 ))}
               </tbody>

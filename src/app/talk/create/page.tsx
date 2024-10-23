@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -10,17 +10,58 @@ export default function CreatePage() {
   const [content, setContent] = useState<string>("");
   const [author, setAuthor] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false); // 로딩 상태
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); // 에러 메시지
   const router = useRouter();
+
+  // 로그인된 사용자 정보 가져오기
+  useEffect(() => {
+    const getUserInfo = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        // userinfo 테이블에서 user.id에 해당하는 username 가져오기
+        const { data, error } = await supabase
+          .from("userinfo")
+          .select("username")
+          .eq("id", user.id) // auth 테이블의 id와 userinfo 테이블의 id를 매칭
+          .single(); // 단일 레코드만 반환
+
+        if (error) {
+          console.error("Error fetching username:", error);
+          setAuthor(""); // 에러 시 기본값
+        } else {
+          setAuthor(data?.username || ""); // 가져온 username 설정
+        }
+      }
+    };
+
+    getUserInfo();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true); // 로딩 상태 시작
+    setErrorMessage(null); // 에러 메시지 초기화
+
+    if (title.length < 5 || content.length < 10) {
+      setErrorMessage(
+        "제목은 최소 5자, 내용은 최소 10자 이상 입력해야 합니다."
+      );
+      setLoading(false);
+      return;
+    }
 
     const { error } = await supabase
       .from("talk_posts")
       .insert([{ title, content, author, password }]);
 
     if (error) {
+      setErrorMessage("게시글 작성 중 오류가 발생했습니다.");
       console.error("Error inserting post:", error.message);
+      setLoading(false);
     } else {
       router.push("/talk");
     }
@@ -33,6 +74,9 @@ export default function CreatePage() {
         style={{ maxWidth: "700px", width: "100%" }}
       >
         <h2 className="mb-4 text-center">글 작성</h2>
+        {errorMessage && (
+          <div className="alert alert-danger text-center">{errorMessage}</div>
+        )}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label className="form-label">작성자</label>
@@ -42,6 +86,7 @@ export default function CreatePage() {
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
               required
+              disabled // 작성자 필드를 비활성화하여 수정 불가하게 설정
             />
           </div>
           <div className="mb-3">
@@ -52,6 +97,7 @@ export default function CreatePage() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
+              minLength={5} // 최소 글자 수
             />
           </div>
           <div className="mb-3">
@@ -63,6 +109,7 @@ export default function CreatePage() {
               onChange={(e) => setContent(e.target.value)}
               rows={4}
               required
+              minLength={10} // 최소 글자 수
             ></textarea>
           </div>
           <div className="mb-3">
@@ -79,8 +126,9 @@ export default function CreatePage() {
             <button
               type="submit"
               className="btn btn-primary rounded-pill px-5 py-2"
+              disabled={loading} // 로딩 중일 때 버튼 비활성화
             >
-              글 작성
+              {loading ? "작성 중..." : "글 작성"}
             </button>
           </div>
         </form>
