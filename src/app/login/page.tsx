@@ -21,37 +21,45 @@ export default function Login() {
       return;
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-      options: {
-        captchaToken,
-      },
-    });
-
-    if (error) {
-      setError(error.message);
-    } else if (data && data.session) {
-      // 액세스 토큰 설정
-      Cookies.set("sb-access-token", data.session.access_token, {
-        expires: 1 / 24, // 1시간 유지
-        sameSite: "Strict",
-        path: "/",
-      });
-
-      // refresh token을 서버에서 설정
-      await fetch("/api/auth/set-refresh-token", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+        options: {
+          captchaToken,
         },
-        body: JSON.stringify({
-          refreshToken: data.session.refresh_token,
-        }),
       });
 
-      // 로그인 성공 시 메인 페이지로 리다이렉션
-      window.location.href = "/";
+      if (error) throw error;
+
+      if (data && data.session) {
+        // 액세스 토큰 설정
+        Cookies.set("sb-access-token", data.session.access_token, {
+          expires: 1 / 24, // 1시간 유지
+          sameSite: "Strict",
+          path: "/",
+        });
+
+        // refresh token을 서버에서 설정
+        await fetch("/api/auth/set-refresh-token", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            refreshToken: data.session.refresh_token,
+          }),
+        });
+
+        // 로그인 성공 시 메인 페이지로 리다이렉션
+        window.location.href = "/";
+      }
+    } catch (error: unknown) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "로그인 중 오류가 발생했습니다."
+      );
     }
   };
 
