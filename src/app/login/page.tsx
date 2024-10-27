@@ -1,11 +1,12 @@
 // src/app/login/page.tsx
 "use client";
 import { useState, useRef } from "react";
-import { supabase } from "../../lib/supabaseClient";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import Cookies from "js-cookie";
 
 export default function Login() {
+  const supabase = useSupabaseClient(); // Supabase 클라이언트 설정
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +39,7 @@ export default function Login() {
         path: "/",
       });
 
-      // 리프레시 토큰은 서버 사이드에서 httpOnly 쿠키로 설정하기 위해 API 호출
+      // refresh token을 서버에서 설정
       await fetch("/api/auth/set-refresh-token", {
         method: "POST",
         headers: {
