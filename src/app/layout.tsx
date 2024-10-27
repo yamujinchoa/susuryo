@@ -259,8 +259,19 @@ export default function RootLayout({ children }: RootLayoutProps) {
                             <button
                               className="dropdown-item"
                               onClick={async () => {
+                                // Supabase에서 로그아웃
                                 await supabase.auth.signOut();
+
+                                // 서버 측에서 refresh token 쿠키를 삭제하기 위해 API 호출
+                                await fetch("/api/auth/logout", {
+                                  method: "POST",
+                                });
+
+                                // 로그아웃 후 사용자 상태를 null로 설정
                                 setUser(null);
+
+                                // 로그아웃 후 페이지 리다이렉션 (필요에 따라 설정)
+                                window.location.href = "/login";
                               }}
                             >
                               로그아웃

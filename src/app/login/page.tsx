@@ -39,7 +39,7 @@ export default function Login() {
           path: "/",
         });
 
-        // refresh token을 서버에서 설정
+        // 서버 API 호출하여 refresh token을 httpOnly 쿠키로 설정
         await fetch("/api/auth/set-refresh-token", {
           method: "POST",
           headers: {
