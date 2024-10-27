@@ -13,6 +13,7 @@ export default function CreatePage() {
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false); // 로딩 상태
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // 에러 메시지
+  const [authorId, setAuthorId] = useState<string>(""); // authorId state 추가
   const router = useRouter();
 
   // 로그인된 사용자 정보 가져오기
@@ -23,6 +24,9 @@ export default function CreatePage() {
       } = await supabase.auth.getUser();
 
       if (user) {
+        // author_id 설정 추가
+        setAuthorId(user.id);
+
         // userinfo 테이블에서 user.id에 해당하는 username 가져오기
         const { data, error } = await supabase
           .from("userinfo")
@@ -55,9 +59,15 @@ export default function CreatePage() {
       return;
     }
 
-    const { error } = await supabase
-      .from("talk_posts")
-      .insert([{ title, content, author, password }]);
+    const { error } = await supabase.from("talk_posts").insert([
+      {
+        title,
+        content,
+        author,
+        author_id: authorId, // author_id 추가
+        password,
+      },
+    ]);
 
     if (error) {
       setErrorMessage("게시글 작성 중 오류가 발생했습니다.");

@@ -72,6 +72,7 @@ export default function CreatePage() {
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
               required
+              disabled // 작성자 필드를 비활성화
             />
           </div>
           <div className="mb-3">
