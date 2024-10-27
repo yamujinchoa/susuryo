@@ -1,12 +1,11 @@
 // src/app/login/page.tsx
 "use client";
 import { useState, useRef } from "react";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import Cookies from "js-cookie";
+import { supabase } from "../../lib/supabaseClient";
 
 export default function Login() {
-  const supabase = useSupabaseClient(); // Supabase 클라이언트 설정
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
