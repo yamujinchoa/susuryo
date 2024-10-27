@@ -42,8 +42,11 @@ export default function DetailPage() {
   // 현재 사용자 정보 가져오기
   const fetchCurrentUser = async () => {
     const { data: user, error } = await supabase.auth.getUser();
-    if (error)
+    if (error) {
       console.error("사용자 정보를 가져오는 중 오류 발생:", error.message);
+    }
+    console.log("Current user:", user?.user); // 추가
+    console.log("User ID:", user?.user?.id); // 추가
     setCurrentUser(user?.user);
   };
 
@@ -58,6 +61,8 @@ export default function DetailPage() {
     if (error) {
       console.error("게시글을 가져오는 중 오류 발생:", error.message);
     } else {
+      console.log("Post data:", data); // 추가
+      console.log("Post author_id:", data.author_id); // 추가
       setPost(data);
     }
   };
@@ -181,6 +186,15 @@ export default function DetailPage() {
       alert("비밀번호가 일치하지 않습니다.");
     }
   };
+
+  // 디버깅을 위한 useEffect 추가
+  useEffect(() => {
+    console.log("Rendering buttons:", {
+      currentUserId: currentUser?.id,
+      postAuthorId: post?.author_id,
+      isMatch: currentUser?.id === post?.author_id,
+    });
+  }, [currentUser?.id, post?.author_id]);
 
   return (
     <div className="container mt-5">
