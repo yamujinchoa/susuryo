@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { supabase } from "../../lib/supabaseClient";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
+import Cookies from "js-cookie";
 
 export default function Login() {
   const [email, setEmail] = useState<string>("");
@@ -19,7 +20,7 @@ export default function Login() {
       return;
     }
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
       options: {
@@ -29,9 +30,16 @@ export default function Login() {
 
     if (error) {
       setError(error.message);
-    } else {
+    } else if (data && data.session) {
+      console.log(data.session.access_token); // 값 확인
+      // 액세스 토큰을 쿠키에 저장
+      Cookies.set("sb-access-token", data.session.access_token, {
+        expires: 1 / 24, // 1시간 유지
+        sameSite: "Strict",
+        path: "/", // 경로 설정
+      });
       // 로그인 성공 시 메인 페이지로 리다이렉션
-      window.location.href = "/"; // 메인 페이지 경로로 수정
+      window.location.href = "/";
     }
   };
 
@@ -65,12 +73,11 @@ export default function Login() {
           />
         </div>
         <div className="col-12 col-md-6 mb-3">
-          {/* hCaptcha 컴포넌트 추가 */}
           <HCaptcha
             ref={captcha}
             sitekey="2104412e-4560-49ba-add4-f7226a444562"
             onVerify={(token) => setCaptchaToken(token)}
-            size="compact" // HCaptcha will be responsive and smaller on mobile
+            size="compact"
           />
         </div>
         <div className="col-12 col-md-6">
