@@ -32,5 +32,5 @@ export async function middleware(request: NextRequest) {
 
 // matcher 설정
 export const config = {
-  matcher: ["/talk/create"],
+  matcher: ["/talk/create", "/promo-room/create"],
 };

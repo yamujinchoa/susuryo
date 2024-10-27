@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -10,14 +10,44 @@ export default function CreatePage() {
   const [content, setContent] = useState("");
   const [author, setAuthor] = useState("");
   const [password, setPassword] = useState("");
+  const [authorId, setAuthorId] = useState<string>("");
+
   const router = useRouter();
+
+  useEffect(() => {
+    const getUserInfo = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        // Set author_id from user.id
+        setAuthorId(user.id);
+
+        const { data, error } = await supabase
+          .from("userinfo")
+          .select("username")
+          .eq("id", user.id)
+          .single();
+
+        if (error) {
+          console.error("Error fetching username:", error);
+          setAuthor("");
+        } else {
+          setAuthor(data?.username || "");
+        }
+      }
+    };
+
+    getUserInfo();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const { error } = await supabase
       .from("promo_posts")
-      .insert([{ title, content, author, password }]);
+      .insert([{ title, content, author, author_id: authorId, password }]);
 
     if (error) {
       console.error("Error inserting post:", error.message);

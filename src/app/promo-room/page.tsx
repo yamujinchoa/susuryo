@@ -59,29 +59,24 @@ export default function ListPage() {
               <thead className="table-light">
                 <tr>
                   <th scope="col">번호</th>
-                  <th scope="col">제목</th>
+                  <th scope="col" style={{ width: "60%" }}>
+                    제목
+                  </th>
                   <th scope="col">작성자</th>
                   <th scope="col">작성 날짜</th>
-                  <th scope="col" className="text-end">
-                    작업
-                  </th>
                 </tr>
               </thead>
               <tbody>
                 {posts.map((post, index) => (
-                  <tr key={post.id}>
+                  <tr
+                    key={post.id}
+                    onClick={() => handleDetail(post.id)}
+                    style={{ cursor: "pointer" }}
+                  >
                     <th scope="row">{index + 1}</th>
                     <td>{post.title}</td>
                     <td>{post.author}</td>
                     <td>{new Date(post.created_at).toLocaleDateString()}</td>
-                    <td className="text-end">
-                      <button
-                        onClick={() => handleDetail(post.id)}
-                        className="btn btn-info btn-sm me-2"
-                      >
-                        보기
-                      </button>
-                    </td>
                   </tr>
                 ))}
               </tbody>
