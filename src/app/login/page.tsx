@@ -31,17 +31,24 @@ export default function Login() {
     if (error) {
       setError(error.message);
     } else if (data && data.session) {
-      // 액세스 토큰과 리프레시 토큰을 쿠키에 저장
+      // 액세스 토큰 설정
       Cookies.set("sb-access-token", data.session.access_token, {
         expires: 1 / 24, // 1시간 유지
         sameSite: "Strict",
         path: "/",
       });
-      Cookies.set("sb-refresh-token", data.session.refresh_token, {
-        expires: 7, // 7일 유지
-        sameSite: "Strict",
-        path: "/",
+
+      // 리프레시 토큰은 서버 사이드에서 httpOnly 쿠키로 설정하기 위해 API 호출
+      await fetch("/api/auth/set-refresh-token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          refreshToken: data.session.refresh_token,
+        }),
       });
+
       // 로그인 성공 시 메인 페이지로 리다이렉션
       window.location.href = "/";
     }
