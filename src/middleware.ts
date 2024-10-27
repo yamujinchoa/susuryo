@@ -11,22 +11,34 @@ const supabase = createClient(
 // middleware 함수
 export async function middleware(request: NextRequest) {
   const { cookies } = request;
-  const accessToken = cookies.get("sb-access-token")?.value; // Supabase에서 발급된 JWT 토큰
+  const accessToken = cookies.get("sb-access-token")?.value;
 
+  // 쿠키가 없는 경우
   if (!accessToken) {
-    // 로그인된 사용자가 아니면 리다이렉트
-    return NextResponse.redirect(new URL("/login", request.url));
+    // 강제 로그아웃을 위한 응답 생성
+    const response = NextResponse.redirect(new URL("/login", request.url));
+
+    // 모든 supabase 관련 쿠키 제거
+    response.cookies.delete("sb-access-token");
+    response.cookies.delete("sb-refresh-token");
+
+    return response;
   }
 
   // JWT 토큰 검증
   const { data, error } = await supabase.auth.getUser(accessToken);
 
   if (error || !data.user) {
-    // 유효하지 않은 토큰이거나 인증되지 않은 경우 리다이렉트
-    return NextResponse.redirect(new URL("/login", request.url));
+    // 토큰이 유효하지 않은 경우도 강제 로그아웃
+    const response = NextResponse.redirect(new URL("/login", request.url));
+
+    // 모든 supabase 관련 쿠키 제거
+    response.cookies.delete("sb-access-token");
+    response.cookies.delete("sb-refresh-token");
+
+    return response;
   }
 
-  // 로그인된 사용자는 요청을 그대로 통과
   return NextResponse.next();
 }
 
