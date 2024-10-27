@@ -4,7 +4,12 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import React from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
+import {
+  useEditor,
+  EditorContent,
+  FloatingMenu,
+  BubbleMenu,
+} from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import TextStyle from "@tiptap/extension-text-style";
@@ -146,6 +151,76 @@ export default function CreatePage() {
                 >
                   <EditorContent editor={editor} />
                 </div>
+                {editor && (
+                  <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
+                    <button
+                      onClick={() => editor.chain().focus().toggleBold().run()}
+                      className={editor.isActive("bold") ? "is-active" : ""}
+                    >
+                      Bold
+                    </button>
+                    <button
+                      onClick={() =>
+                        editor.chain().focus().toggleItalic().run()
+                      }
+                      className={editor.isActive("italic") ? "is-active" : ""}
+                    >
+                      Italic
+                    </button>
+                    <button
+                      onClick={() =>
+                        editor.chain().focus().toggleUnderline().run()
+                      }
+                      className={
+                        editor.isActive("underline") ? "is-active" : ""
+                      }
+                    >
+                      Underline
+                    </button>
+                  </BubbleMenu>
+                )}
+                {editor && (
+                  <FloatingMenu
+                    editor={editor}
+                    tippyOptions={{ duration: 100 }}
+                  >
+                    <button
+                      onClick={() =>
+                        editor.chain().focus().setParagraph().run()
+                      }
+                    >
+                      Paragraph
+                    </button>
+                    <button
+                      onClick={() =>
+                        editor.chain().focus().toggleHeading({ level: 1 }).run()
+                      }
+                    >
+                      H1
+                    </button>
+                    <button
+                      onClick={() =>
+                        editor.chain().focus().toggleHeading({ level: 2 }).run()
+                      }
+                    >
+                      H2
+                    </button>
+                    <button
+                      onClick={() =>
+                        editor.chain().focus().toggleBulletList().run()
+                      }
+                    >
+                      Bullet List
+                    </button>
+                    <button
+                      onClick={() =>
+                        editor.chain().focus().toggleOrderedList().run()
+                      }
+                    >
+                      Ordered List
+                    </button>
+                  </FloatingMenu>
+                )}
               </div>
               <div className="mb-3">
                 <label className="form-label">
