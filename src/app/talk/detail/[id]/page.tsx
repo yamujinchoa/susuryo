@@ -3,11 +3,13 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter, useParams } from "next/navigation";
+import { User } from "@supabase/supabase-js"; // Supabase의 User 타입을 가져옵니다.
 
 export default function DetailPage() {
   const [post, setPost] = useState<{
     title: string;
     author: string;
+    author_id: string;
     content: string;
     created_at: string;
     password?: string;
@@ -16,6 +18,7 @@ export default function DetailPage() {
     {
       id: string;
       author: string;
+      author_id: string;
       content: string;
       created_at: string;
       password?: string;
@@ -24,58 +27,69 @@ export default function DetailPage() {
   const [commentContent, setCommentContent] = useState("");
   const [commentAuthor, setCommentAuthor] = useState("");
   const [commentPassword, setCommentPassword] = useState("");
+  const [currentUser, setCurrentUser] = useState<User | null>(null); // User 타입 사용
   const router = useRouter();
   const { id } = useParams() as { id: string };
 
   useEffect(() => {
+    fetchCurrentUser();
     if (id) {
       fetchPost(id);
       fetchComments(id);
     }
   }, [id]);
 
-  // Fetch post data
+  // 현재 사용자 정보 가져오기
+  const fetchCurrentUser = async () => {
+    const { data: user, error } = await supabase.auth.getUser();
+    if (error)
+      console.error("사용자 정보를 가져오는 중 오류 발생:", error.message);
+    setCurrentUser(user?.user);
+  };
+
+  // 게시글 데이터 가져오기
   const fetchPost = async (postId: string) => {
     const { data, error } = await supabase
       .from("talk_posts")
-      .select("title, author, content, created_at, password")
+      .select("title, author, author_id, content, created_at, password")
       .eq("id", postId)
       .single();
 
     if (error) {
-      console.error("Error fetching post:", error.message);
+      console.error("게시글을 가져오는 중 오류 발생:", error.message);
     } else {
       setPost(data);
     }
   };
 
-  // Fetch comments data
+  // 댓글 데이터 가져오기
   const fetchComments = async (postId: string) => {
     const { data, error } = await supabase
       .from("talk_comments")
-      .select()
+      .select("id, author, author_id, content, created_at, password")
       .eq("post_id", postId)
       .order("created_at", { ascending: true });
 
     if (error) {
-      console.error("Error fetching comments:", error.message);
+      console.error("댓글을 가져오는 중 오류 발생:", error.message);
     } else {
       setComments(data || []);
     }
   };
 
-  // Handle post deletion
+  // 게시글 삭제
   const handleDelete = async () => {
-    const passwordInput = prompt("비밀번호를 입력하세요:");
-
-    if (passwordInput === null) {
+    if (currentUser?.id !== post?.author_id) {
+      alert("삭제 권한이 없습니다.");
       return;
     }
+
+    const passwordInput = prompt("비밀번호를 입력하세요:");
 
     if (passwordInput === post?.password) {
       const { error } = await supabase.from("talk_posts").delete().eq("id", id);
       if (error) {
-        console.error("Error deleting post:", error.message);
+        console.error("게시글 삭제 중 오류 발생:", error.message);
       } else {
         alert("게시글이 성공적으로 삭제되었습니다.");
         router.push("/talk");
@@ -85,21 +99,26 @@ export default function DetailPage() {
     }
   };
 
-  // Handle comment submission
+  // 댓글 작성
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!currentUser) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
 
     const { error } = await supabase.from("talk_comments").insert([
       {
         post_id: id,
         author: commentAuthor,
+        author_id: currentUser.id,
         content: commentContent,
         password: commentPassword,
       },
     ]);
 
     if (error) {
-      console.error("Error inserting comment:", error.message);
+      console.error("댓글 작성 중 오류 발생:", error.message);
     } else {
       setCommentContent("");
       setCommentAuthor("");
@@ -108,34 +127,25 @@ export default function DetailPage() {
     }
   };
 
-  // Handle comment edit
+  // 댓글 수정
   const handleCommentEdit = async (commentId: string) => {
+    const comment = comments.find((c) => c.id === commentId);
+    if (currentUser?.id !== comment?.author_id) {
+      alert("수정 권한이 없습니다.");
+      return;
+    }
+
     const newContent = prompt("새로운 댓글 내용을 입력하세요:");
     const passwordInput = prompt("비밀번호를 입력하세요:");
 
-    if (passwordInput === null || newContent === null) {
-      return;
-    }
-
-    const { data: comment, error: fetchError } = await supabase
-      .from("talk_comments")
-      .select("id, password")
-      .eq("id", commentId)
-      .single();
-
-    if (fetchError || !comment) {
-      console.error("Error fetching comment:", fetchError?.message);
-      return;
-    }
-
-    if (passwordInput === comment.password) {
+    if (passwordInput === comment?.password) {
       const { error } = await supabase
         .from("talk_comments")
         .update({ content: newContent })
         .eq("id", commentId);
 
       if (error) {
-        console.error("Error updating comment:", error.message);
+        console.error("댓글 수정 중 오류 발생:", error.message);
       } else {
         alert("댓글이 성공적으로 수정되었습니다.");
         fetchComments(id);
@@ -145,33 +155,24 @@ export default function DetailPage() {
     }
   };
 
-  // Handle comment deletion
+  // 댓글 삭제
   const handleCommentDelete = async (commentId: string) => {
+    const comment = comments.find((c) => c.id === commentId);
+    if (currentUser?.id !== comment?.author_id) {
+      alert("삭제 권한이 없습니다.");
+      return;
+    }
+
     const passwordInput = prompt("비밀번호를 입력하세요:");
 
-    if (passwordInput === null) {
-      return;
-    }
-
-    const { data: comment, error: fetchError } = await supabase
-      .from("talk_comments")
-      .select("password")
-      .eq("id", commentId)
-      .single();
-
-    if (fetchError || !comment) {
-      console.error("Error fetching comment:", fetchError?.message);
-      return;
-    }
-
-    if (passwordInput === comment.password) {
+    if (passwordInput === comment?.password) {
       const { error } = await supabase
         .from("talk_comments")
         .delete()
         .eq("id", commentId);
 
       if (error) {
-        console.error("Error deleting comment:", error.message);
+        console.error("댓글 삭제 중 오류 발생:", error.message);
       } else {
         alert("댓글이 성공적으로 삭제되었습니다.");
         fetchComments(id);
@@ -198,18 +199,22 @@ export default function DetailPage() {
               작성 날짜: {new Date(post.created_at).toLocaleDateString()}
             </p>
             <div className="d-flex justify-content-end mt-3">
-              <button
-                onClick={() => router.push(`/talk/edit/${id}`)}
-                className="btn btn-warning rounded-pill me-2"
-              >
-                수정
-              </button>
-              <button
-                onClick={handleDelete}
-                className="btn btn-danger rounded-pill"
-              >
-                삭제
-              </button>
+              {currentUser?.id === post?.author_id && (
+                <>
+                  <button
+                    onClick={() => router.push(`/talk/edit/${id}`)}
+                    className="btn btn-warning rounded-pill me-2"
+                  >
+                    수정
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    className="btn btn-danger rounded-pill"
+                  >
+                    삭제
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -217,7 +222,7 @@ export default function DetailPage() {
         <p className="text-center text-muted">게시글을 불러오는 중...</p>
       )}
 
-      {/* Comments Section */}
+      {/* 댓글 섹션 */}
       <div className="mt-5">
         <h4>댓글</h4>
         {comments.length > 0 ? (
@@ -233,18 +238,22 @@ export default function DetailPage() {
                 </span>
                 <p className="mb-2">{comment.content}</p>
                 <div className="d-flex justify-content-end">
-                  <button
-                    onClick={() => handleCommentEdit(comment.id)}
-                    className="btn btn-sm btn-warning rounded-pill me-2"
-                  >
-                    수정
-                  </button>
-                  <button
-                    onClick={() => handleCommentDelete(comment.id)}
-                    className="btn btn-sm btn-danger rounded-pill"
-                  >
-                    삭제
-                  </button>
+                  {currentUser?.id === comment.author_id && (
+                    <>
+                      <button
+                        onClick={() => handleCommentEdit(comment.id)}
+                        className="btn btn-sm btn-warning rounded-pill me-2"
+                      >
+                        수정
+                      </button>
+                      <button
+                        onClick={() => handleCommentDelete(comment.id)}
+                        className="btn btn-sm btn-danger rounded-pill"
+                      >
+                        삭제
+                      </button>
+                    </>
+                  )}
                 </div>
               </li>
             ))}
@@ -254,7 +263,7 @@ export default function DetailPage() {
         )}
       </div>
 
-      {/* Comment Form */}
+      {/* 댓글 작성 폼 */}
       <div className="mt-4">
         <h4>댓글 작성</h4>
         <form onSubmit={handleCommentSubmit}>
