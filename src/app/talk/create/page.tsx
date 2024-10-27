@@ -4,15 +4,23 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import React from "react";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Image from "@tiptap/extension-image";
 
 export default function CreatePage() {
   const [title, setTitle] = useState<string>("");
-  const [content, setContent] = useState<string>("");
-  const [author, setAuthor] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [author, setAuthor] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false); // 로딩 상태
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // 에러 메시지
   const router = useRouter();
+
+  // Tiptap 에디터 설정
+  const editor = useEditor({
+    extensions: [StarterKit, Image],
+    content: "<p>내용을 입력하세요...</p>",
+  });
 
   // 로그인된 사용자 정보 가져오기
   useEffect(() => {
@@ -46,7 +54,9 @@ export default function CreatePage() {
     setLoading(true); // 로딩 상태 시작
     setErrorMessage(null); // 에러 메시지 초기화
 
-    if (title.length < 5 || content.length < 10) {
+    const content = editor?.getHTML(); // 에디터의 HTML 내용 가져오기
+
+    if (title.length < 5 || !content || content.length < 10) {
       setErrorMessage(
         "제목은 최소 5자, 내용은 최소 10자 이상 입력해야 합니다."
       );
@@ -102,15 +112,7 @@ export default function CreatePage() {
           </div>
           <div className="mb-3">
             <label className="form-label">내용</label>
-            <textarea
-              className="form-control rounded"
-              style={{ height: "200px", resize: "vertical" }}
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              rows={4}
-              required
-              minLength={10} // 최소 글자 수
-            ></textarea>
+            <EditorContent editor={editor} className="form-control rounded" />
           </div>
           <div className="mb-3">
             <label className="form-label">비밀번호 (수정/삭제 시 필요)</label>
