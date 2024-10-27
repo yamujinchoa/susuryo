@@ -10,12 +10,9 @@ import {
   FloatingMenu,
   BubbleMenu,
 } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import TextStyle from "@tiptap/extension-text-style";
 import FontFamily from "@tiptap/extension-font-family";
-import Bold from "@tiptap/extension-bold";
-import Italic from "@tiptap/extension-italic";
 import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
 import Highlight from "@tiptap/extension-highlight";
@@ -24,6 +21,12 @@ import Table from "@tiptap/extension-table";
 import TableRow from "@tiptap/extension-table-row";
 import TableCell from "@tiptap/extension-table-cell";
 import TableHeader from "@tiptap/extension-table-header";
+import Bold from "@tiptap/extension-bold";
+import Italic from "@tiptap/extension-italic";
+import BulletList from "@tiptap/extension-bullet-list";
+import OrderedList from "@tiptap/extension-ordered-list";
+import Heading from "@tiptap/extension-heading";
+import Paragraph from "@tiptap/extension-paragraph";
 
 export default function CreatePage() {
   const [title, setTitle] = useState<string>("");
@@ -36,12 +39,9 @@ export default function CreatePage() {
   // Tiptap 에디터 설정
   const editor = useEditor({
     extensions: [
-      StarterKit,
       Image,
       TextStyle,
       FontFamily.configure({ types: ["textStyle"] }),
-      Bold,
-      Italic,
       Underline,
       Link,
       Highlight,
@@ -50,6 +50,12 @@ export default function CreatePage() {
       TableRow,
       TableCell,
       TableHeader,
+      Bold,
+      Italic,
+      BulletList,
+      OrderedList,
+      Heading,
+      Paragraph,
     ],
     content: "<p>내용을 입력하세요...</p>",
   });
