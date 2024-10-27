@@ -7,6 +7,18 @@ import React from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
+import TextStyle from "@tiptap/extension-text-style";
+import FontFamily from "@tiptap/extension-font-family";
+import Bold from "@tiptap/extension-bold";
+import Italic from "@tiptap/extension-italic";
+import Underline from "@tiptap/extension-underline";
+import Link from "@tiptap/extension-link";
+import Highlight from "@tiptap/extension-highlight";
+import Color from "@tiptap/extension-color";
+import Table from "@tiptap/extension-table";
+import TableRow from "@tiptap/extension-table-row";
+import TableCell from "@tiptap/extension-table-cell";
+import TableHeader from "@tiptap/extension-table-header";
 
 export default function CreatePage() {
   const [title, setTitle] = useState<string>("");
@@ -18,7 +30,22 @@ export default function CreatePage() {
 
   // Tiptap 에디터 설정
   const editor = useEditor({
-    extensions: [StarterKit, Image],
+    extensions: [
+      StarterKit,
+      Image,
+      TextStyle,
+      FontFamily.configure({ types: ["textStyle"] }),
+      Bold,
+      Italic,
+      Underline,
+      Link,
+      Highlight,
+      Color,
+      Table.configure({ resizable: true }),
+      TableRow,
+      TableCell,
+      TableHeader,
+    ],
     content: "<p>내용을 입력하세요...</p>",
   });
 
@@ -78,62 +105,72 @@ export default function CreatePage() {
   };
 
   return (
-    <div className="container mt-5 d-flex justify-content-center">
-      <div
-        className="shadow-lg p-4 rounded"
-        style={{ maxWidth: "700px", width: "100%" }}
-      >
-        <h2 className="mb-4 text-center">글 작성</h2>
-        {errorMessage && (
-          <div className="alert alert-danger text-center">{errorMessage}</div>
-        )}
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label className="form-label">작성자</label>
-            <input
-              type="text"
-              className="form-control rounded-pill"
-              value={author}
-              onChange={(e) => setAuthor(e.target.value)}
-              required
-              disabled // 작성자 필드를 비활성화하여 수정 불가하게 설정
-            />
+    <div className="container mt-5 px-3">
+      <div className="row justify-content-center">
+        <div className="col-lg-8 col-md-10 col-sm-12">
+          <div className="card shadow-sm p-4 rounded">
+            <h2 className="mb-4 text-center">글 작성</h2>
+            {errorMessage && (
+              <div className="alert alert-danger text-center">
+                {errorMessage}
+              </div>
+            )}
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <label className="form-label">작성자</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={author}
+                  onChange={(e) => setAuthor(e.target.value)}
+                  required
+                  disabled // 작성자 필드를 비활성화하여 수정 불가하게 설정
+                />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">제목</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  required
+                  minLength={5} // 최소 글자 수
+                />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">내용</label>
+                <div
+                  className="form-control p-0"
+                  style={{ minHeight: "200px" }}
+                >
+                  <EditorContent editor={editor} />
+                </div>
+              </div>
+              <div className="mb-3">
+                <label className="form-label">
+                  비밀번호 (수정/삭제 시 필요)
+                </label>
+                <input
+                  type="password"
+                  className="form-control"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="text-center">
+                <button
+                  type="submit"
+                  className="btn btn-primary px-5 py-2"
+                  disabled={loading} // 로딩 중일 때 버튼 비활성화
+                >
+                  {loading ? "작성 중..." : "글 작성"}
+                </button>
+              </div>
+            </form>
           </div>
-          <div className="mb-3">
-            <label className="form-label">제목</label>
-            <input
-              type="text"
-              className="form-control rounded-pill"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              minLength={5} // 최소 글자 수
-            />
-          </div>
-          <div className="mb-3">
-            <label className="form-label">내용</label>
-            <EditorContent editor={editor} className="form-control rounded" />
-          </div>
-          <div className="mb-3">
-            <label className="form-label">비밀번호 (수정/삭제 시 필요)</label>
-            <input
-              type="password"
-              className="form-control rounded-pill"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <div className="text-center">
-            <button
-              type="submit"
-              className="btn btn-primary rounded-pill px-5 py-2"
-              disabled={loading} // 로딩 중일 때 버튼 비활성화
-            >
-              {loading ? "작성 중..." : "글 작성"}
-            </button>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
   );
