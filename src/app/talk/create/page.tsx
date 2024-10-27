@@ -1,64 +1,29 @@
+// src/app/talk/create/page.tsx
+// src/components/CreatePage.tsx
 "use client";
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import React from "react";
-import {
-  useEditor,
-  EditorContent,
-  FloatingMenu,
-  BubbleMenu,
-} from "@tiptap/react";
-import Image from "@tiptap/extension-image";
-import TextStyle from "@tiptap/extension-text-style";
-import FontFamily from "@tiptap/extension-font-family";
-import Underline from "@tiptap/extension-underline";
-import Link from "@tiptap/extension-link";
-import Highlight from "@tiptap/extension-highlight";
-import Color from "@tiptap/extension-color";
-import Table from "@tiptap/extension-table";
-import TableRow from "@tiptap/extension-table-row";
-import TableCell from "@tiptap/extension-table-cell";
-import TableHeader from "@tiptap/extension-table-header";
-import Bold from "@tiptap/extension-bold";
-import Italic from "@tiptap/extension-italic";
-import BulletList from "@tiptap/extension-bullet-list";
-import OrderedList from "@tiptap/extension-ordered-list";
-import Heading from "@tiptap/extension-heading";
-import Paragraph from "@tiptap/extension-paragraph";
+import { LexicalComposer } from "@lexical/react/LexicalComposer";
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { ContentEditable } from "@lexical/react/LexicalContentEditable";
+import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
+import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
+import { EditorState } from "lexical";
+import ErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 
 export default function CreatePage() {
   const [title, setTitle] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [content, setContent] = useState<string>("");
   const [author, setAuthor] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false); // 로딩 상태
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // 에러 메시지
+  const [successMessage, setSuccessMessage] = useState<string | null>(null); // 성공 메시지
+  const [showPreview, setShowPreview] = useState<boolean>(false); // 미리보기 상태
   const router = useRouter();
-
-  // Tiptap 에디터 설정
-  const editor = useEditor({
-    extensions: [
-      Image,
-      TextStyle,
-      FontFamily.configure({ types: ["textStyle"] }),
-      Underline,
-      Link,
-      Highlight,
-      Color,
-      Table.configure({ resizable: true }),
-      TableRow,
-      TableCell,
-      TableHeader,
-      Bold,
-      Italic,
-      BulletList,
-      OrderedList,
-      Heading,
-      Paragraph,
-    ],
-    content: "<p>내용을 입력하세요...</p>",
-  });
 
   // 로그인된 사용자 정보 가져오기
   useEffect(() => {
@@ -91,10 +56,9 @@ export default function CreatePage() {
     e.preventDefault();
     setLoading(true); // 로딩 상태 시작
     setErrorMessage(null); // 에러 메시지 초기화
+    setSuccessMessage(null); // 성공 메시지 초기화
 
-    const content = editor?.getHTML(); // 에디터의 HTML 내용 가져오기
-
-    if (title.length < 5 || !content || content.length < 10) {
+    if (title.length < 5 || content.length < 10) {
       setErrorMessage(
         "제목은 최소 5자, 내용은 최소 10자 이상 입력해야 합니다."
       );
@@ -111,147 +75,131 @@ export default function CreatePage() {
       console.error("Error inserting post:", error.message);
       setLoading(false);
     } else {
-      router.push("/talk");
+      setSuccessMessage("게시글이 성공적으로 작성되었습니다!");
+      setLoading(false);
+      setTimeout(() => {
+        router.push("/talk");
+      }, 2000); // 2초 후에 페이지 이동
     }
   };
 
+  const theme = {
+    // 필요한 스타일을 정의합니다.
+    paragraph: "editor-paragraph",
+  };
+
+  function onChange(editorState: EditorState) {
+    editorState.read(() => {
+      // 편집기의 현재 상태를 읽어 필요한 로직을 구현합니다.
+      const contentJson = editorState.toJSON();
+      setContent(JSON.stringify(contentJson));
+    });
+  }
+
   return (
-    <div className="container mt-5 px-3">
-      <div className="row justify-content-center">
-        <div className="col-lg-8 col-md-10 col-sm-12">
-          <div className="card shadow-sm p-4 rounded">
-            <h2 className="mb-4 text-center">글 작성</h2>
-            {errorMessage && (
-              <div className="alert alert-danger text-center">
-                {errorMessage}
-              </div>
-            )}
-            <form onSubmit={handleSubmit}>
-              <div className="mb-3">
-                <label className="form-label">작성자</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={author}
-                  onChange={(e) => setAuthor(e.target.value)}
-                  required
-                  disabled // 작성자 필드를 비활성화하여 수정 불가하게 설정
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">제목</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
-                  minLength={5} // 최소 글자 수
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">내용</label>
-                <div
-                  className="form-control p-0"
-                  style={{ minHeight: "200px" }}
-                >
-                  <EditorContent editor={editor} />
-                </div>
-                {editor && (
-                  <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
-                    <button
-                      onClick={() => editor.chain().focus().toggleBold().run()}
-                      className={editor.isActive("bold") ? "is-active" : ""}
-                    >
-                      Bold
-                    </button>
-                    <button
-                      onClick={() =>
-                        editor.chain().focus().toggleItalic().run()
-                      }
-                      className={editor.isActive("italic") ? "is-active" : ""}
-                    >
-                      Italic
-                    </button>
-                    <button
-                      onClick={() =>
-                        editor.chain().focus().toggleUnderline().run()
-                      }
-                      className={
-                        editor.isActive("underline") ? "is-active" : ""
-                      }
-                    >
-                      Underline
-                    </button>
-                  </BubbleMenu>
-                )}
-                {editor && (
-                  <FloatingMenu
-                    editor={editor}
-                    tippyOptions={{ duration: 100 }}
-                  >
-                    <button
-                      onClick={() =>
-                        editor.chain().focus().setParagraph().run()
-                      }
-                    >
-                      Paragraph
-                    </button>
-                    <button
-                      onClick={() =>
-                        editor.chain().focus().toggleHeading({ level: 1 }).run()
-                      }
-                    >
-                      H1
-                    </button>
-                    <button
-                      onClick={() =>
-                        editor.chain().focus().toggleHeading({ level: 2 }).run()
-                      }
-                    >
-                      H2
-                    </button>
-                    <button
-                      onClick={() =>
-                        editor.chain().focus().toggleBulletList().run()
-                      }
-                    >
-                      Bullet List
-                    </button>
-                    <button
-                      onClick={() =>
-                        editor.chain().focus().toggleOrderedList().run()
-                      }
-                    >
-                      Ordered List
-                    </button>
-                  </FloatingMenu>
-                )}
-              </div>
-              <div className="mb-3">
-                <label className="form-label">
-                  비밀번호 (수정/삭제 시 필요)
-                </label>
-                <input
-                  type="password"
-                  className="form-control"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="text-center">
-                <button
-                  type="submit"
-                  className="btn btn-primary px-5 py-2"
-                  disabled={loading} // 로딩 중일 때 버튼 비활성화
-                >
-                  {loading ? "작성 중..." : "글 작성"}
-                </button>
-              </div>
-            </form>
+    <div className="container mt-5 d-flex justify-content-center">
+      <div
+        className="shadow-lg p-4 rounded"
+        style={{ maxWidth: "700px", width: "100%" }}
+      >
+        <h2 className="mb-4 text-center">글 작성</h2>
+        {errorMessage && (
+          <div className="alert alert-danger text-center">{errorMessage}</div>
+        )}
+        {successMessage && (
+          <div className="alert alert-success text-center">
+            {successMessage}
           </div>
-        </div>
+        )}
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label className="form-label">작성자</label>
+            <input
+              type="text"
+              className="form-control rounded-pill"
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+              required
+              disabled // 작성자 필드를 비활성화하여 수정 불가하게 설정
+            />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">제목</label>
+            <input
+              type="text"
+              className="form-control rounded-pill"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+              minLength={5} // 최소 글자 수
+            />
+            <small className="text-muted">최소 5자 이상 입력해주세요.</small>
+          </div>
+          <div className="mb-3">
+            <label className="form-label">내용</label>
+            <LexicalComposer
+              initialConfig={{
+                namespace: "MyEditor",
+                theme,
+                onError: (error: Error) => console.error(error),
+              }}
+            >
+              <RichTextPlugin
+                contentEditable={
+                  <ContentEditable
+                    className="form-control rounded"
+                    style={{ height: "200px", resize: "vertical" }}
+                  />
+                }
+                placeholder={<div>내용을 입력하세요...</div>}
+                ErrorBoundary={ErrorBoundary}
+              />
+              <HistoryPlugin />
+              <OnChangePlugin onChange={onChange} />
+            </LexicalComposer>
+          </div>
+          <div className="mb-3">
+            <label className="form-label">비밀번호 (수정/삭제 시 필요)</label>
+            <input
+              type="password"
+              className="form-control rounded-pill"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <div className="text-center mb-3">
+            <button
+              type="button"
+              className="btn btn-secondary rounded-pill px-4 py-2 me-2"
+              onClick={() => router.push("/talk")}
+            >
+              취소
+            </button>
+            <button
+              type="submit"
+              className="btn btn-primary rounded-pill px-5 py-2"
+              disabled={loading} // 로딩 중일 때 버튼 비활성화
+            >
+              {loading ? "작성 중..." : "글 작성"}
+            </button>
+            <button
+              type="button"
+              className="btn btn-info rounded-pill px-4 py-2 ms-2"
+              onClick={() => setShowPreview(!showPreview)}
+            >
+              {showPreview ? "미리보기 닫기" : "미리보기"}
+            </button>
+          </div>
+        </form>
+        {showPreview && (
+          <div className="preview border rounded p-3 mt-4">
+            <h3 className="text-center">미리보기</h3>
+            <h4 className="mt-3">{title}</h4>
+            <p>{content}</p>
+            <small className="text-muted">작성자: {author}</small>
+          </div>
+        )}
       </div>
     </div>
   );
