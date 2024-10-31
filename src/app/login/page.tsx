@@ -3,7 +3,7 @@
 
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { useRef, useState } from "react";
-import { login, signup } from "./actions";
+import { login } from "./actions";
 
 export default function LoginPage() {
   const [token, setToken] = useState<string | null>(null);
@@ -61,15 +61,6 @@ export default function LoginPage() {
                 }}
               >
                 로그인
-              </button>
-              <button
-                className="btn btn-secondary"
-                formAction={async (formData) => {
-                  await handleAction(formData);
-                  await signup(formData);
-                }}
-              >
-                회원가입
               </button>
             </div>
           </form>
