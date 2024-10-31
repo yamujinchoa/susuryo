@@ -11,8 +11,14 @@ export default function LoginPage() {
   const [formData, setFormData] = useState<FormData | null>(null);
 
   useEffect(() => {
-    // token이 설정되면 login 호출
     if (token && formData) {
+      console.log(
+        "Form Data:",
+        formData.get("email"),
+        formData.get("password")
+      );
+      console.log("Token:", token);
+
       formData.append("token", token);
       login(formData);
     }
