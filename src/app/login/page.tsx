@@ -9,6 +9,8 @@ export default function LoginPage() {
   const [token, setToken] = useState<string | null>(null);
   const captchaRef = useRef<HCaptcha>(null);
 
+  console.log("HCAPTCHA Site Key:", process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY);
+
   const handleAction = async (formData: FormData) => {
     if (!token) {
       captchaRef.current?.execute();
