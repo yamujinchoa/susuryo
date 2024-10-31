@@ -1,4 +1,4 @@
-//src/app/login/actions.ts
+// src/app/login/actions.ts
 "use server";
 
 import { revalidatePath } from "next/cache";
@@ -9,19 +9,29 @@ export async function login(formData: FormData) {
   const supabase = await createClient();
   console.log("Supabase Client:", supabase);
 
-  const data = {
-    email: formData.get("email") as string,
-    password: formData.get("password") as string,
-  };
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+  const captchaToken = formData.get("token") as string;
 
-  const { error } = await supabase.auth.signInWithPassword(data);
+  try {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+      options: {
+        captchaToken,
+      },
+    });
 
-  if (error) {
-    console.log("Login Error:", error.message);
-    return redirect("/error"); // error가 있을 경우에만 /error로 리디렉션
+    if (error) {
+      console.log("Login Error:", error.message);
+      return redirect("/error");
+    }
+
+    console.log("Login successful");
+    revalidatePath("/", "layout");
+    redirect("/");
+  } catch (error) {
+    console.error("Unexpected Error during login:", error);
+    redirect("/error");
   }
-
-  console.log("Login successful");
-  revalidatePath("/", "layout"); // error가 없을 경우에만 revalidate 및 /로 리디렉션
-  redirect("/");
 }
