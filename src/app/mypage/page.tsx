@@ -8,13 +8,18 @@ export default function MyPage() {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
-        setUser(data.session.user);
-      } else {
-        window.location.href = "/login"; // 로그인이 안 되어있으면 로그인 페이지로 리다이렉트
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setUser(session?.user ?? null);
+        if (!session) {
+          window.location.href = "/login";
+        }
       }
-    });
+    );
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
   const handleLogout = async () => {
