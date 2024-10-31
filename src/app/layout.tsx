@@ -10,19 +10,22 @@ import { User } from "@supabase/supabase-js";
 
 interface RootLayoutProps {
   children: ReactNode;
+  initialUser: User | null;
 }
 
-export default function RootLayout({ children }: RootLayoutProps) {
-  const [user, setUser] = useState<User | null>(null);
+export default function RootLayout({ children, initialUser }: RootLayoutProps) {
+  const [user, setUser] = useState<User | null>(initialUser);
 
   useEffect(() => {
-    const checkUser = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      setUser(session?.user ?? null);
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => {
+      authListener.subscription.unsubscribe();
     };
-    checkUser();
   }, []);
 
   return (
@@ -199,13 +202,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
           <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
             <div className="container">
               <a className="navbar-brand" href="/">
-                <img
-                  src="/favicon.ico" // favicon 경로를 지정합니다
-                  alt="수수료닷컴 로고" // 대체 텍스트
-                  width="30" // 원하는 너비로 설정
-                  height="30" // 원하는 높이로 설정
-                  className="d-inline-block align-top me-2" // 오른쪽 마진을 추가
-                />
                 수수료닷컴
               </a>
               <button
@@ -222,19 +218,19 @@ export default function RootLayout({ children }: RootLayoutProps) {
               <div className="collapse navbar-collapse" id="navbarNav">
                 <ul className="navbar-nav ms-auto">
                   <li className="nav-item">
-                    <a className="nav-link" href="/promo-room">
+                    <Link href="/promo-room" className="nav-link">
                       크몽인 홍보방
-                    </a>
+                    </Link>
                   </li>
                   <li className="nav-item">
-                    <a className="nav-link" href="/members-room">
+                    <Link href="/members-room" className="nav-link">
                       크몽인들의 밤
-                    </a>
+                    </Link>
                   </li>
                   <li className="nav-item">
-                    <a className="nav-link" href="/talk">
+                    <Link href="/talk" className="nav-link">
                       크몽인 TALK
-                    </a>
+                    </Link>
                   </li>
                   <li className="nav-item dropdown">
                     <a
@@ -249,7 +245,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
                     <ul className="dropdown-menu dropdown-menu-end">
                       {user ? (
                         <>
-                          {/* 로그인 상태일 때 */}
                           <li>
                             <Link href="/mypage" className="dropdown-item">
                               마이페이지
@@ -259,18 +254,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
                             <button
                               className="dropdown-item"
                               onClick={async () => {
-                                // Supabase에서 로그아웃
                                 await supabase.auth.signOut();
-
-                                // 서버 측에서 refresh token 쿠키를 삭제하기 위해 API 호출
-                                await fetch("/api/auth/logout", {
-                                  method: "POST",
-                                });
-
-                                // 로그아웃 후 사용자 상태를 null로 설정
                                 setUser(null);
-
-                                // 로그아웃 후 페이지 리다이렉션 (필요에 따라 설정)
                                 window.location.href = "/login";
                               }}
                             >
@@ -280,7 +265,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
                         </>
                       ) : (
                         <>
-                          {/* 로그아웃 상태일 때 */}
                           <li>
                             <Link href="/login" className="dropdown-item">
                               로그인
