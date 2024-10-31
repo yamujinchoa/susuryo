@@ -14,6 +14,7 @@ export async function login(formData: FormData) {
   };
 
   const { error } = await supabase.auth.signInWithPassword(data);
+  console.log("Login Error:", error); // 에러 내용을 로그로 출력
 
   if (error) {
     redirect("/error");
