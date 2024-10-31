@@ -1,111 +1,80 @@
 // src/app/login/page.tsx
 "use client";
-import { useState, useRef } from "react";
+
 import HCaptcha from "@hcaptcha/react-hcaptcha";
-import Cookies from "js-cookie";
-import { supabase } from "../../lib/supabaseClient";
+import { useRef, useState } from "react";
+import { login, signup } from "./actions";
 
-export default function Login() {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [error, setError] = useState<string | null>(null);
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  const captcha = useRef<HCaptcha | null>(null);
+export default function LoginPage() {
+  const [token, setToken] = useState<string | null>(null);
+  const captchaRef = useRef<HCaptcha>(null);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!captchaToken) {
-      setError("Please complete the CAPTCHA verification.");
+  const handleAction = async (formData: FormData) => {
+    if (!token) {
+      captchaRef.current?.execute();
       return;
     }
-
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-        options: {
-          captchaToken,
-        },
-      });
-
-      if (error) throw error;
-
-      if (data && data.session) {
-        // 액세스 토큰 설정
-        Cookies.set("sb-access-token", data.session.access_token, {
-          expires: 1 / 24, // 1시간 유지
-          sameSite: "Strict",
-          path: "/",
-        });
-
-        // 서버 API 호출하여 refresh token을 httpOnly 쿠키로 설정
-        await fetch("/api/auth/set-refresh-token", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            refreshToken: data.session.refresh_token,
-          }),
-        });
-
-        // 로그인 성공 시 메인 페이지로 리다이렉션
-        window.location.href = "/";
-      }
-    } catch (error: unknown) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : "로그인 중 오류가 발생했습니다."
-      );
-    }
+    formData.append("token", token);
   };
 
   return (
-    <div className="container mt-5">
-      <form onSubmit={handleLogin} className="row justify-content-center">
-        <div className="col-12 col-md-6 mb-3">
-          <label htmlFor="email" className="form-label">
-            이메일
-          </label>
-          <input
-            type="email"
-            className="form-control"
-            id="email"
-            placeholder="가입한 이메일을 입력하세요"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+    <div className="container">
+      <div className="row justify-content-center">
+        <div className="col-12 col-sm-8 col-md-6">
+          <form className="mt-4">
+            <div className="mb-3">
+              <label htmlFor="email" className="form-label">
+                이메일
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                className="form-control"
+                required
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="password" className="form-label">
+                비밀번호
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                className="form-control"
+                required
+              />
+            </div>
+            <HCaptcha
+              ref={captchaRef}
+              sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY!}
+              onVerify={setToken}
+              size="invisible"
+            />
+            <div className="d-grid gap-2">
+              <button
+                className="btn btn-primary"
+                formAction={async (formData) => {
+                  await handleAction(formData);
+                  await login(formData);
+                }}
+              >
+                로그인
+              </button>
+              <button
+                className="btn btn-secondary"
+                formAction={async (formData) => {
+                  await handleAction(formData);
+                  await signup(formData);
+                }}
+              >
+                회원가입
+              </button>
+            </div>
+          </form>
         </div>
-        <div className="col-12 col-md-6 mb-3">
-          <label htmlFor="password" className="form-label">
-            비밀번호
-          </label>
-          <input
-            type="password"
-            className="form-control"
-            id="password"
-            placeholder="비밀번호를 입력하세요"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <div className="col-12 col-md-6 mb-3">
-          <HCaptcha
-            ref={captcha}
-            sitekey="2104412e-4560-49ba-add4-f7226a444562"
-            onVerify={(token) => setCaptchaToken(token)}
-            size="compact"
-          />
-        </div>
-        <div className="col-12 col-md-6">
-          <button type="submit" className="btn btn-primary w-100">
-            로그인
-          </button>
-          {error && <p className="text-danger mt-3">{error}</p>}
-        </div>
-      </form>
+      </div>
     </div>
   );
 }

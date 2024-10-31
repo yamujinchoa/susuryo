@@ -1,27 +1,15 @@
-// middleware.ts
+// src 레벨에 생성하는 nextjs 레이어 middleware.ts
+import { type NextRequest } from "next/server";
+import { updateSession } from "@/utils/supabase/middleware";
 
-import { NextResponse } from "next/server";
-import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
-import type { NextRequest } from "next/server";
-
-// middleware 함수
-export async function middleware(req: NextRequest) {
-  const res = NextResponse.next();
-  const supabase = createMiddlewareClient({ req, res });
-
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  // 인증되지 않은 사용자는 로그인 페이지로 리다이렉트
-  if (!session) {
-    return NextResponse.redirect(new URL("/login", req.url));
-  }
-
-  return res;
+export async function middleware(request: NextRequest) {
+  return await updateSession(request);
 }
 
-// matcher 설정
 export const config = {
-  matcher: ["/talk/create", "/promo-room/create"],
+  matcher: [
+    // 여기에 다른 미들웨어 설정을 넣어도 됩니다
+    "/talk/create",
+    "/promo-room/create",
+  ],
 };
