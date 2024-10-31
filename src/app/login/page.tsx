@@ -11,16 +11,17 @@ export default function LoginPage() {
   const [formData, setFormData] = useState<FormData | null>(null);
 
   useEffect(() => {
+    // token과 formData가 설정된 경우에만 login 호출
     if (token && formData) {
       console.log(
-        "Form Data:",
+        "Form Data (email, password):",
         formData.get("email"),
         formData.get("password")
       );
-      console.log("Token:", token);
+      console.log("Captcha Token:", token);
 
-      formData.append("token", token);
-      login(formData);
+      formData.append("token", token); // formData에 token 추가
+      login(formData); // login 함수 호출
     }
   }, [token, formData]);
 
