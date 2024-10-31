@@ -18,13 +18,17 @@ export async function login(formData: FormData) {
   console.log("Password:", password);
   console.log("Captcha Token:", captchaToken);
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
     options: {
       captchaToken,
     },
   });
+
+  // 실행 결과를 출력하여 확인
+  console.log("SignIn Response Data:", data);
+  console.log("SignIn Response Error:", error);
 
   if (error) {
     console.log("Login Error:", error.message);
