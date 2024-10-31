@@ -7,6 +7,7 @@ import { createClient } from "@/utils/supabase/server";
 
 export async function login(formData: FormData) {
   const supabase = await createClient();
+  console.log("Supabase Client:", supabase); // 클라이언트 확인
 
   const data = {
     email: formData.get("email") as string,
@@ -17,7 +18,10 @@ export async function login(formData: FormData) {
   console.log("Login Error:", error); // 에러 내용을 로그로 출력
 
   if (error) {
+    console.log("Error during login:", error.message);
     redirect("/error");
+  } else {
+    console.log("Login successful");
   }
 
   revalidatePath("/", "layout");
