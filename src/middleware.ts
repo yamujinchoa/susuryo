@@ -2,31 +2,17 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/utils/supabase/middleware";
 
-const protectedRoutes = ["/talk/create", "/promo-room/create"];
-const publicRoutes = ["/login", "signup", "/"];
-
 export async function middleware(request: NextRequest) {
-  const path = request.nextUrl.pathname;
-  const isProtectedRoute = protectedRoutes.includes(path);
+  const response = await updateSession(request);
 
-  const session = await updateSession(request);
-  console.log("middleware session : ", session);
-
-  if (isProtectedRoute && !session) {
-    return NextResponse.redirect(new URL("/login", request.nextUrl));
-  }
-
-  const matchingRoute = publicRoutes.find((route) =>
-    request.nextUrl.pathname.includes(route)
-  );
-
-  if (matchingRoute && session) {
-    return NextResponse.redirect(new URL(matchingRoute, request.nextUrl));
-  }
-
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
+  matcher: [
+    // 미들웨어가 적용될 경로 설정
+    "/talk/create",
+    "/promo-room/create",
+    // 추가 경로 설정 가능
+  ],
 };
