@@ -31,7 +31,7 @@ export async function login(formData: FormData) {
   console.log("SignIn Response Error:", error);
 
   if (error) {
-    console.log("Login Error:", error.message);
+    console.log("Login Error:", error);
     return redirect("/error");
   }
 
