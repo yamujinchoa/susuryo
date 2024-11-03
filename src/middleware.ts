@@ -1,15 +1,32 @@
-// src 레벨에 생성하는 nextjs 레이어 middleware.ts
-import { type NextRequest } from "next/server";
+// app/middleware.ts
+import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/utils/supabase/middleware";
 
+const protectedRoutes = ["/talk/create", "/promo-room/create"];
+const publicRoutes = ["/login", "signup", "/"];
+
 export async function middleware(request: NextRequest) {
-  return await updateSession(request);
+  const path = request.nextUrl.pathname;
+  const isProtectedRoute = protectedRoutes.includes(path);
+
+  const session = await updateSession(request);
+  console.log("middleware session : ", session);
+
+  if (isProtectedRoute && !session) {
+    return NextResponse.redirect(new URL("/login", request.nextUrl));
+  }
+
+  const matchingRoute = publicRoutes.find((route) =>
+    request.nextUrl.pathname.includes(route)
+  );
+
+  if (matchingRoute && session) {
+    return NextResponse.redirect(new URL(matchingRoute, request.nextUrl));
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: [
-    // 여기에 다른 미들웨어 설정을 넣어도 됩니다
-    "/talk/create",
-    "/promo-room/create",
-  ],
+  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
 };
