@@ -10,22 +10,18 @@ import { User } from "@supabase/supabase-js";
 
 interface RootLayoutProps {
   children: ReactNode;
-  initialUser: User | null;
 }
 
-export default function RootLayout({ children, initialUser }: RootLayoutProps) {
-  const [user, setUser] = useState<User | null>(initialUser);
+export default function RootLayout({ children }: RootLayoutProps) {
+  const [user, setUser] = useState<User | null>(null);
+
+  const getUser = async () => {
+    const { data } = await supabase.auth.getUser();
+    setUser(data?.user ?? null);
+  };
 
   useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user ?? null);
-      }
-    );
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
+    getUser();
   }, []);
 
   return (
