@@ -1,15 +1,18 @@
-// src 레벨에 생성하는 nextjs 레이어 middleware.ts
-import { type NextRequest } from "next/server";
+// app/middleware.ts
+import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/utils/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
-  return await updateSession(request);
+  const response = await updateSession(request);
+
+  return response;
 }
 
 export const config = {
   matcher: [
-    // 여기에 다른 미들웨어 설정을 넣어도 됩니다
+    // 미들웨어가 적용될 경로 설정
     "/talk/create",
     "/promo-room/create",
+    // 추가 경로 설정 가능
   ],
 };
